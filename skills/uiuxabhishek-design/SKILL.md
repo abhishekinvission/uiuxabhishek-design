@@ -1,12 +1,16 @@
 ---
 name: uiuxabhishek-design
 description: Unified UI/UX design craft, audits, visual polish, layout, typography, design systems, gestures, spring animation and fluid interactions. Use for frontend design or interaction tasks, drawing on Impeccable by Paul Bakaus and Apple Design by Emil Kowalski. Not relevant to backend-only work.
+license: MIT for UIUX Abhishek Design original work; bundled references keep their upstream licenses (see NOTICE.md)
+metadata:
+  author: Abhishek Rampal (uiuxAbhishek)
+  repository: https://github.com/abhishekinvission/uiuxabhishek-design
 ---
 # UIUX Abhishek Design
 
 **Visual Craft. Fluid Motion. Exceptional Experiences.**
 
-This skill is a coordinated, documentation-based adaptation of third-party design guidance. It combines the visual discipline of **Impeccable (Paul Bakaus)** with the interaction and motion principles of **Apple Design (Emil Kowalski)**. The original authors retain credit; this is not an official Apple product or an upstream replacement.
+UIUX Abhishek Design, by Abhishek Rampal (uiuxAbhishek), is a unified skill that routes design tasks to curated third-party guidance. It combines the visual discipline of **Impeccable (Paul Bakaus)** with the interaction and motion principles of **Apple Design (Emil Kowalski)**. Bundled references stay the work and copyright of their original authors. This is not an official Apple product or an upstream replacement.
 
 ## When and what to load
 
@@ -39,4 +43,4 @@ This package embeds **Markdown design guidance only** to stay portable and safe 
 
 ## Attribution
 
-See [attribution](NOTICE.md) and the bundled upstream third-party licenses in `LICENSES/`.
+See [attribution and ownership](NOTICE.md) and the bundled third-party licenses and notices in `LICENSES/`.

@@ -1,11 +1,23 @@
-# Attribution and redistribution notice
+# UIUX Abhishek Design — Notice
 
-This independent skill collection was integrated for the **uiuxabhishek** brand.
-It includes unmodified Markdown instructions from the user's installed copies of:
+**UIUX Abhishek Design** (`uiuxabhishek-design`)
+Created and maintained by Abhishek Rampal (uiuxAbhishek) — <https://github.com/abhishekinvission/uiuxabhishek-design>
 
-- **Impeccable** by Paul Bakaus — https://github.com/pbakaus/impeccable — Apache-2.0. Original copyright and license notices are retained. The original entry-point filename was renamed to SOURCE_SKILL.md to prevent extra skills from being autodetected.
-- **Apple Design** by Emil Kowalski — https://github.com/emilkowalski/skills — MIT. Original copyright and license notices are retained. The original entry-point filename was renamed to SOURCE_SKILL.md.
+## Ownership
 
-This integration adds a new routing SKILL.md and documentation. It is not an official Apple product; Apple is not associated with it. It is not endorsed by or affiliated with the upstream authors.
+- **Original work.** The routing `SKILL.md`, integration architecture, documentation and maintenance policy written for this project are © 2026 Abhishek Rampal and licensed under the MIT License (`LICENSE`).
+- **Third-party work.** Material under `references/` comes from the sources below. It remains the work of its respective authors and is redistributed under their original licenses. Bundling, renaming, reorganising or routing to this material does not transfer its copyright or ownership to Abhishek Rampal or anyone else.
 
-Bundled documentation is not the original Impeccable CLI runtime or a complete reproduction of upstream install hooks and binaries.
+## Third-party sources
+
+- **Impeccable** by Paul Bakaus — <https://github.com/pbakaus/impeccable> — Apache License 2.0 (`LICENSES/IMPECCABLE_APACHE-2.0.txt`). Upstream attribution notices are reproduced in `LICENSES/IMPECCABLE_NOTICE.md`. Bundled version: 4.1.1 (per its frontmatter). Markdown content is unmodified; the entry-point file was renamed from `SKILL.md` to `SOURCE_SKILL.md` so it is not discovered as a separate skill.
+- **platform-design-skills** by ehmo — <https://github.com/ehmo/platform-design-skills> — MIT (`LICENSES/PLATFORM_DESIGN_SKILLS_MIT.txt`). Impeccable's `reference/ios.md` and `reference/android.md` are distilled from this work, as stated in Impeccable's NOTICE.
+- **Apple Design** by Emil Kowalski — <https://github.com/emilkowalski/skills> — MIT (`LICENSES/APPLE_DESIGN_MIT.txt`). Markdown content is unmodified; the entry-point file was renamed from `SKILL.md` to `SOURCE_SKILL.md`.
+
+## Disclaimers
+
+UIUX Abhishek Design is an independent project. It is not affiliated with, sponsored by or endorsed by the upstream authors, Apple Inc. or Google. Apple and other trademarks belong to their respective owners; the Apple Design reference describes publicly presented design principles and does not imply any association.
+
+Only Markdown guidance is bundled. Upstream CLIs, scripts, hooks, binaries and install tooling are not included, and this package is not a replacement for the original projects.
+
+When redistributing, keep this notice, `LICENSE` and the `LICENSES/` directory.

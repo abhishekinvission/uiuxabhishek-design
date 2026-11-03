@@ -1,11 +1,27 @@
 # Sources manifest
 
-Generated from globally installed Impeccable and Apple Design documentation. Local home directory paths are intentionally omitted.
-Original entry-point SKILL.md filenames are renamed to SOURCE_SKILL.md. Other Markdown documents retain their relative locations.
-This generator excludes executable scripts, binaries and non-Markdown assets; it does not reproduce full upstream tooling.
+Provenance record for third-party material bundled in **UIUX Abhishek Design** (`uiuxabhishek-design`). Files listed here remain the work of their authors under the licenses shown; see [NOTICE.md](NOTICE.md).
 
-Impeccable Markdown files: 40
-Apple Design Markdown files: 1
+## Upstream sources
+
+| Source | Author | License | Bundled version | Bundled path |
+| --- | --- | --- | --- | --- |
+| [Impeccable](https://github.com/pbakaus/impeccable) | Paul Bakaus | Apache-2.0 + [NOTICE](LICENSES/IMPECCABLE_NOTICE.md) | 4.1.1 (frontmatter); exact commit not recorded | `references/impeccable/` (40 Markdown files) |
+| [platform-design-skills](https://github.com/ehmo/platform-design-skills) | ehmo | MIT | Derived content within Impeccable 4.1.1 | `references/impeccable/reference/ios.md`, `android.md` |
+| [Apple Design](https://github.com/emilkowalski/skills) | Emil Kowalski | MIT | Exact commit not recorded | `references/apple-design/` (1 Markdown file) |
+
+The initial import came from locally installed copies of Impeccable and Apple Design. Local home-directory paths are intentionally left out. Each original entry-point `SKILL.md` was renamed to `SOURCE_SKILL.md`, and other Markdown documents keep their relative locations. Executable scripts, binaries and non-Markdown assets were excluded, so full upstream tooling is not reproduced.
+
+## License and notice files
+
+| File | Source | Retrieved |
+| --- | --- | --- |
+| `LICENSES/IMPECCABLE_APACHE-2.0.txt` | Impeccable `LICENSE` | Initial import |
+| `LICENSES/IMPECCABLE_NOTICE.md` | Impeccable `NOTICE.md` at commit `3e38e595c708` | 2026-11-03 |
+| `LICENSES/PLATFORM_DESIGN_SKILLS_MIT.txt` | platform-design-skills `LICENSE` (`main`) | 2026-11-03 |
+| `LICENSES/APPLE_DESIGN_MIT.txt` | emilkowalski/skills license | Initial import |
+
+The same files are mirrored in `skills/uiuxabhishek-design/LICENSES/` so they travel with installed copies.
 
 ## Included files (SHA-256)
 

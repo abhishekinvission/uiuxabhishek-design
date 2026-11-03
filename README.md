@@ -1,48 +1,101 @@
 # UIUX Abhishek Design
 
-> Visual Craft. Fluid Motion. Exceptional Experiences.
+> **Visual Craft. Fluid Motion. Exceptional Experiences.**
 
-**Skill name:** `uiuxabhishek-design`
+UIUX Abhishek Design is a single, installable Agent Skill (`uiuxabhishek-design`) that gives AI coding agents senior-level UI/UX judgment, covering visual hierarchy, layout and typography as well as gesture physics, spring motion and accessible interaction.
 
-A portable Agent Skill for visual design craft and fluid UI motion, combining documentation guidance from **Impeccable** (Paul Bakaus) and **Apple Design** (Emil Kowalski). Maintained as an independent integration under the uiuxabhishek identity; not affiliated with Apple or the upstream authors.
+Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/abhishekinvission))**.
+
+- **Repository:** [abhishekinvission/uiuxabhishek-design](https://github.com/abhishekinvission/uiuxabhishek-design)
+- **Skill ID:** `uiuxabhishek-design`
+- **Entry point:** [`skills/uiuxabhishek-design/SKILL.md`](skills/uiuxabhishek-design/SKILL.md)
+
+## What it does
+
+| Area | Capabilities |
+| --- | --- |
+| **Visual craft** | Design direction, visual hierarchy, layout, spacing, typography, color, theming, design tokens and design-system consistency |
+| **UX review** | Critiques, audits, information architecture, cognitive load, UX copy, empty/error states, onboarding, i18n and edge cases |
+| **Fluid motion** | Direct manipulation, press feedback, interruptible transitions, velocity-aware springs, drag/flick, sheets and drawers, reduced motion |
+| **Platforms** | Responsive web, plus iOS and Android platform conventions where they apply |
+| **Quality gates** | Accessibility, keyboard and focus behavior, contrast, performance and responsive verification |
+
+The skill routes each task to the relevant guidance and loads it on demand, so agents only read what the task needs. It doesn't impose a single visual style. Your product's existing design system, accessibility requirements and explicit scope take priority.
+
+## Supported agents
+
+UIUX Abhishek Design follows the open [Agent Skills](https://agentskills.io) format, so it works with any agent that supports it, including:
+
+- Claude Code
+- OpenAI Codex
+- Gemini CLI
+- GitHub Copilot
+- Google Antigravity
+- other Agent Skills–compatible agents, through their own skill or repository-import mechanism
+
+Agent names and flags depend on the version of the Skills CLI you have installed. Run `npx skills --help` to see the options it supports.
 
 ## Installation
 
-Once this folder is pushed to your public GitHub repo named `uiuxabhishek-design`, install it with the official Skills CLI:
+Install into the current project:
 
 ```bash
 npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design
 ```
 
-For global installation across commonly used agents:
+Install globally for several agents at once:
 
 ```bash
-npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a antigravity -a claude-code -a codex -a gemini-cli -a github-copilot -y
+npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a claude-code -a codex -a gemini-cli -a github-copilot -a antigravity -y
 ```
 
-Replace `abhishekinvission` with the actual GitHub account or organization owning the public repository. Supported agents and flags depend on your installed Skills CLI version. For internal agents, use their supported Agent Skills mechanism or GitHub repository import.
+Preview what the repository provides before you install:
+
+```bash
+npx skills add abhishekinvission/uiuxabhishek-design --list
+```
 
 ## Usage
 
-Ask your agent: "Use uiuxabhishek-design to audit this UI for design consistency, typography, responsive spacing, press feedback and interruptible motion. Read-only; report findings without editing."
+Once it's installed, agents pick the skill up automatically for frontend design and interaction work. You can also name it directly:
 
-## What's included
+- *"Use uiuxabhishek-design to audit this UI for hierarchy, typography, responsive spacing and press feedback. Read-only: report findings without editing."*
+- *"Use uiuxabhishek-design to redesign this settings page so it's calmer and easier to scan."*
+- *"Use uiuxabhishek-design to make this bottom sheet draggable with interruptible, velocity-aware spring motion and reduced-motion support."*
 
-- `skills/uiuxabhishek-design/SKILL.md` — one discoverable skill entry point with unified guidance and conflict handling.
-- `skills/uiuxabhishek-design/references/impeccable/` — source Markdown guidance copied from the locally installed Impeccable skill.
-- `skills/uiuxabhishek-design/references/apple-design/` — source Markdown guidance copied from the locally installed Apple Design skill.
-- `LICENSES/` and `NOTICE.md` — upstream license notices and attribution.
-- `SOURCES.md` — a record of included files and their SHA-256 hashes (no local paths).
+The skill respects your scope. Read-only audits never edit files, and code samples or commands in its references are documentation, not permission to run them.
 
-This is a **guidance-only integration**. Advanced Impeccable CLI commands, scripts, hooks and engine are deliberately not bundled. To get those, install the original Impeccable skill separately and follow its security guidance.
+## Repository layout
 
-## Upstream authors and licenses
+```text
+skills/uiuxabhishek-design/
+├── SKILL.md            # Single entry point: routing, precedence and procedure
+├── NOTICE.md           # In-skill attribution (travels with installs)
+├── LICENSES/           # In-skill copies of required licenses and notices
+└── references/         # Guidance, loaded only when relevant
+    ├── impeccable/
+    └── apple-design/
+LICENSE                 # MIT license for original UIUX Abhishek Design work
+NOTICE.md               # Ownership, attribution and redistribution notice
+SOURCES.md              # Provenance and SHA-256 checksums of bundled third-party files
+LICENSES/               # Third-party licenses and notices
+CLAUDE.md               # Maintainer policy for integrating new sources
+```
 
-- [Impeccable — Paul Bakaus](https://github.com/pbakaus/impeccable) (Apache License 2.0).
-- [Apple Design — Emil Kowalski](https://github.com/emilkowalski/skills) (MIT License).
+This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks or scripts from third-party sources. Advanced Impeccable tooling, for example, needs a separate installation of the original project.
 
-The integration-specific files are MIT-licensed; redistributed upstream material retains its original license. Keep LICENSES and NOTICE when redistributing.
+## Maintenance
 
-## Before publishing
+- **Updating installed copies:** run the install command again, or `npx skills update` if your Skills CLI version supports it. Publishing to GitHub doesn't update copies already installed on other machines or agent instances.
+- **Adding a source:** give the maintainer's Claude Code session a GitHub skill URL, a `SKILL.md`, a skill directory or an archive. [`CLAUDE.md`](CLAUDE.md) defines the integration policy: usefulness, security and license audits, deduplication, routing and documentation updates, validation, and publishing only when every check passes.
+- **Provenance:** every bundled third-party file is listed with its checksum in [`SOURCES.md`](SOURCES.md).
 
-Review all exported Markdown for private/company-specific content and unexpected instructions, ensure third-party licenses are included, and commit only what you intend to publish. The generator does not create a repo or push files automatically.
+## Third-Party Licenses & Credits
+
+UIUX Abhishek Design's original work (routing, integration architecture and documentation) is © Abhishek Rampal and licensed under the [MIT License](LICENSE). Bundled third-party material is **not** owned by Abhishek Rampal. It stays the work of its authors and is redistributed under its original licenses:
+
+- **[Impeccable](https://github.com/pbakaus/impeccable)** by Paul Bakaus: [Apache License 2.0](LICENSES/IMPECCABLE_APACHE-2.0.txt), with its [upstream NOTICE](LICENSES/IMPECCABLE_NOTICE.md).
+- **[platform-design-skills](https://github.com/ehmo/platform-design-skills)** by ehmo: [MIT](LICENSES/PLATFORM_DESIGN_SKILLS_MIT.txt). Impeccable's iOS and Android references are derived from it.
+- **[Apple Design](https://github.com/emilkowalski/skills)** by Emil Kowalski: [MIT](LICENSES/APPLE_DESIGN_MIT.txt).
+
+UIUX Abhishek Design is independent and isn't affiliated with or endorsed by these authors, or by Apple Inc. or Google. "Apple" and other trademarks belong to their owners. See [NOTICE.md](NOTICE.md) for full attribution and [SOURCES.md](SOURCES.md) for provenance. Keep `LICENSE`, `NOTICE.md` and `LICENSES/` when you redistribute.
