@@ -2,7 +2,7 @@
 
 > **Visual Craft. Fluid Motion. Exceptional Experiences.**
 
-UIUX Abhishek Design is a single, installable Agent Skill (`uiuxabhishek-design`) that gives AI coding agents senior-level UI/UX judgment, covering visual hierarchy, layout and typography as well as gesture physics, spring motion and accessible interaction.
+UIUX Abhishek Design is a single, installable Agent Skill (`uiuxabhishek-design`) that gives AI coding agents senior-level UI/UX and frontend engineering judgment. It covers visual hierarchy, layout and typography, gesture physics, spring motion and accessible interaction, framework-neutral frontend delivery, and Azure DevOps ticket-to-draft-PR workflows.
 
 Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/abhishekinvission))**.
 
@@ -18,9 +18,13 @@ Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/a
 | **UX review** | Critiques, audits, information architecture, cognitive load, UX copy, empty/error states, onboarding, i18n and edge cases |
 | **Fluid motion** | Direct manipulation, press feedback, interruptible transitions, velocity-aware springs, drag/flick, sheets and drawers, reduced motion |
 | **Platforms** | Responsive web, plus iOS and Android platform conventions where they apply |
-| **Quality gates** | Accessibility, keyboard and focus behavior, contrast, performance and responsive verification |
+| **Frontend engineering** | Pages and routing, API integration, admin CRUD, data reports and exports, state management, testing, review and release readiness, shared packages and components, microfrontends |
+| **Azure DevOps delivery** | Azure Boards work item → live ticket read → PR reconciliation → clarification and dependency gates → safe Git preflight → implementation → ordered verification → authorized **draft** PR → structured report |
+| **Quality gates** | Accessibility, keyboard and focus behavior, contrast, performance, responsive verification and the project's real test/lint/build checks |
 
-The skill routes each task to the relevant guidance and loads it on demand, so agents only read what the task needs. It doesn't impose a single visual style. Your product's existing design system, accessibility requirements and explicit scope take priority.
+The skill routes each task to the relevant guidance and loads it on demand, so agents only read what the task needs. It doesn't impose a single visual style, framework, library or test runner. Your product's existing design system, repository conventions, accessibility requirements and explicit scope take priority.
+
+**Azure DevOps delivery** is opt-in. It runs only for Azure Boards work, needs an approved, authenticated Azure DevOps connector or `az` CLI that your agent can already use, and never guesses the organization, project, repository or target branch. Without write authorization it stays in audit/dry-run mode. It never merges, deploys or edits ticket state on its own.
 
 ## Supported agents
 
@@ -62,6 +66,8 @@ Once it's installed, agents pick the skill up automatically for frontend design 
 - *"Use uiuxabhishek-design to audit this UI for hierarchy, typography, responsive spacing and press feedback. Read-only: report findings without editing."*
 - *"Use uiuxabhishek-design to redesign this settings page so it's calmer and easier to scan."*
 - *"Use uiuxabhishek-design to make this bottom sheet draggable with interruptible, velocity-aware spring motion and reduced-motion support."*
+- *"Use uiuxabhishek-design to add an admin table with server pagination, filters, CSV export and edit forms, with tests."*
+- *"Use uiuxabhishek-design to deliver Azure Boards work item 12345 as a dry run."* Add authorization to publish when you want a draft PR.
 
 The skill respects your scope. Read-only audits never edit files, and code samples or commands in its references are documentation, not permission to run them.
 
@@ -72,9 +78,12 @@ skills/uiuxabhishek-design/
 ├── SKILL.md            # Single entry point: routing, precedence and procedure
 ├── NOTICE.md           # In-skill attribution (travels with installs)
 ├── LICENSES/           # In-skill copies of required licenses and notices
+├── templates/          # PR description and ADO delivery report templates
 └── references/         # Guidance, loaded only when relevant
-    ├── impeccable/
-    └── apple-design/
+    ├── impeccable/     # Visual craft (third-party)
+    ├── apple-design/   # Interaction and motion (third-party)
+    ├── frontend/       # Frontend engineering guides (original)
+    └── workflows/      # Azure DevOps delivery (original)
 LICENSE                 # MIT license for original UIUX Abhishek Design work
 NOTICE.md               # Ownership, attribution and redistribution notice
 SOURCES.md              # Provenance and SHA-256 checksums of bundled third-party files
@@ -82,7 +91,7 @@ LICENSES/               # Third-party licenses and notices
 CLAUDE.md               # Maintainer policy for integrating new sources
 ```
 
-This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks or scripts from third-party sources. Advanced Impeccable tooling, for example, needs a separate installation of the original project.
+This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks, scripts or credentials (including Azure DevOps credentials or connectors). Advanced Impeccable tooling, for example, needs a separate installation of the original project.
 
 ## Maintenance
 
@@ -92,10 +101,10 @@ This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks or sc
 
 ## Third-Party Licenses & Credits
 
-UIUX Abhishek Design's original work (routing, integration architecture and documentation) is © Abhishek Rampal and licensed under the [MIT License](LICENSE). Bundled third-party material is **not** owned by Abhishek Rampal. It stays the work of its authors and is redistributed under its original licenses:
+UIUX Abhishek Design's original work (routing, integration architecture, documentation, frontend engineering and Azure DevOps guides, and templates) is © Abhishek Rampal and licensed under the [MIT License](LICENSE). Bundled third-party material is **not** owned by Abhishek Rampal. It stays the work of its authors and is redistributed under its original licenses:
 
 - **[Impeccable](https://github.com/pbakaus/impeccable)** by Paul Bakaus: [Apache License 2.0](LICENSES/IMPECCABLE_APACHE-2.0.txt), with its [upstream NOTICE](LICENSES/IMPECCABLE_NOTICE.md).
 - **[platform-design-skills](https://github.com/ehmo/platform-design-skills)** by ehmo: [MIT](LICENSES/PLATFORM_DESIGN_SKILLS_MIT.txt). Impeccable's iOS and Android references are derived from it.
 - **[Apple Design](https://github.com/emilkowalski/skills)** by Emil Kowalski: [MIT](LICENSES/APPLE_DESIGN_MIT.txt).
 
-UIUX Abhishek Design is independent and isn't affiliated with or endorsed by these authors, or by Apple Inc. or Google. "Apple" and other trademarks belong to their owners. See [NOTICE.md](NOTICE.md) for full attribution and [SOURCES.md](SOURCES.md) for provenance. Keep `LICENSE`, `NOTICE.md` and `LICENSES/` when you redistribute.
+UIUX Abhishek Design is independent and isn't affiliated with or endorsed by these authors, or by Apple Inc., Google or Microsoft. Apple, Azure DevOps and other trademarks belong to their owners. See [NOTICE.md](NOTICE.md) for full attribution and [SOURCES.md](SOURCES.md) for provenance. Keep `LICENSE`, `NOTICE.md` and `LICENSES/` when you redistribute.

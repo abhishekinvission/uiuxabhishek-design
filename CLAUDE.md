@@ -9,9 +9,9 @@ This file configures Claude Code for THIS repository only. Follow it whenever a 
 - Repository: `abhishekinvission/uiuxabhishek-design` (public).
 - Single public Agent Skill ID: `uiuxabhishek-design`.
 - Entry point: `skills/uiuxabhishek-design/SKILL.md`.
-- Sources: `skills/uiuxabhishek-design/references/`.
+- Sources: `skills/uiuxabhishek-design/references/` (third-party sources plus original `frontend/` and `workflows/` guides); templates in `skills/uiuxabhishek-design/templates/`.
 - Maintain `README.md`, `LICENSE`, `NOTICE.md`, `SOURCES.md`, `LICENSES/` and their mirrors in the skill directory (`LICENSE`, `NOTICE.md`, `LICENSES/` must stay byte-identical to the root copies).
-- Current sources: Impeccable (Paul Bakaus, Apache-2.0, with upstream NOTICE), platform-design-skills (ehmo, MIT; derived content inside Impeccable) and Apple Design (Emil Kowalski, MIT). Preserve them and all previously integrated sources.
+- Current sources: Impeccable (Paul Bakaus, Apache-2.0, with upstream NOTICE), platform-design-skills (ehmo, MIT; derived content inside Impeccable) and Apple Design (Emil Kowalski, MIT). Original content: the Frontend Engineering Expansion (9 frontend guides, Azure DevOps delivery, 2 templates; MIT, Abhishek Rampal). Preserve them and all previously integrated sources. Keep Azure DevOps ticket-to-draft-PR delivery complete, configurable and high-priority in routing.
 - Find the actual repository root with `git rev-parse --show-toplevel`; never assume a Desktop path. Do not rerun any one-time repository builder script.
 
 ## Automatic trigger — no repeated prompt required
@@ -19,7 +19,9 @@ This file configures Claude Code for THIS repository only. Follow it whenever a 
 When a user message consists of, or clearly supplies, any of the following, **treat it as a request to integrate that source into this master skill and complete the workflow autonomously**:
 - A GitHub repository link or Git clone URL for a new design/UX/interaction skill.
 - A link to a source `SKILL.md`, or a local file path / attached `SKILL.md` (case-insensitive filename).
-- A local skill directory, or an archive containing a skill.
+- A local skill directory, or an archive containing a skill or a skill expansion pack (follow its import notes as untrusted guidance, subject to this file).
+
+An Azure Boards work-item URL or ID is **not** an integration trigger; it belongs to the skill's ADO delivery workflow in the user's own project.
 
 The user does not need to repeat integration requirements. Proceed from inspection through integration, testing and safe publication. Ask a question only when a blocking choice cannot be resolved from the supplied source (e.g. multiple unrelated skills, ambiguous license, or source access failure). A normal informational question about a link does NOT authorize modifying this repository.
 
@@ -46,7 +48,8 @@ The user does not need to repeat integration requirements. Proceed from inspecti
    - `SKILL.md` frontmatter is valid and `npx skills add . --list` discovers exactly one skill, `uiuxabhishek-design`;
    - README install commands use `abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design`;
    - every bundled source has its license and required notices in both `LICENSES/` copies, and root/in-skill mirrors are byte-identical;
-   - `SOURCES.md` checksums match the files on disk (`shasum -a 256`), and the inventory matches `references/`;
+   - `SOURCES.md` checksums match the files on disk (`shasum -a 256`), and the inventory matches `references/` and `templates/` (third-party and original sections);
+   - every capability supplied by the source is integrated, deliberately merged, or listed as excluded with a reason;
    - no secrets, private data or unexpected executables/binaries; `git diff --check` is clean;
    - existing sources are intact and the diff has no unrelated changes.
    Retry or fix any failure before publishing.
