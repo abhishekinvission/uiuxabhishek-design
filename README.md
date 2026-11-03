@@ -11,16 +11,16 @@ A portable Agent Skill for visual design craft and fluid UI motion, combining do
 Once this folder is pushed to your public GitHub repo named `uiuxabhishek-design`, install it with the official Skills CLI:
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/uiuxabhishek-design --skill uiuxabhishek-design
+npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design
 ```
 
 For global installation across commonly used agents:
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/uiuxabhishek-design --skill uiuxabhishek-design -g -a antigravity -a claude-code -a codex -a gemini-cli -a github-copilot -y
+npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a antigravity -a claude-code -a codex -a gemini-cli -a github-copilot -y
 ```
 
-Replace `YOUR_GITHUB_USERNAME` with the actual GitHub account or organization owning the public repository. Supported agents and flags depend on your installed Skills CLI version. For internal agents, use their supported Agent Skills mechanism or GitHub repository import.
+Replace `abhishekinvission` with the actual GitHub account or organization owning the public repository. Supported agents and flags depend on your installed Skills CLI version. For internal agents, use their supported Agent Skills mechanism or GitHub repository import.
 
 ## Usage
 
