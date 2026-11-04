@@ -18,9 +18,9 @@ import zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILL = os.path.join(ROOT, "skills", "uiuxabhishek-design")
 NAME = "uiuxabhishek-design"
-UPLOAD_DESCRIPTION = ("UI/UX design and frontend engineering router for visual craft, accessibility, "
-                      "motion, frontend pages, APIs, CRUD, tests and Azure DevOps delivery. "
-                      "Loads only what a task needs.")
+UPLOAD_DESCRIPTION = ("UI/UX design, frontend engineering and Git workflow router for visual craft, "
+                      "accessibility, motion, pages, APIs, tests, Git, PRs, releases and Azure DevOps "
+                      "delivery. Loads only what a task needs.")
 UPLOAD_DESCRIPTION_MAX = 200
 SKIP = {".DS_Store", "Thumbs.db"}
 STAMP = (2026, 1, 1, 0, 0, 0)

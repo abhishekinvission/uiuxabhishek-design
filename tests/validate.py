@@ -5,8 +5,9 @@ Standard library only. Run from anywhere:  python3 tests/validate.py [--cli]
 Checks: single-skill discovery and frontmatter, Markdown links, SOURCES.md
 checksums and inventory, license/notice mirrors, router parsing and
 reference coverage, routing scenarios, context budget, a basic
-secret/executable scan, README install commands and the Claude upload ZIP
-(built to a temporary folder). --cli also runs `npx skills add . --list` and
+secret/executable scan, README install commands, the Claude upload ZIP
+(built to a temporary folder) and the Git workflow commands against
+throwaway repositories with a mock remote (tests/git_sandbox.py). --cli also runs `npx skills add . --list` and
 a real global install for every documented agent into a throwaway HOME.
 
 Routing scenarios use a deterministic keyword simulation of SKILL.md's
@@ -231,6 +232,7 @@ def check_coverage(caps, never):
 
 LIMIT_AUDIT = "read-only, dry run, report only, don't change"
 LIMIT_IMPLEMENT = "don't push, no pr, locally"
+ADO_OWNS_GIT = "when `ado` is selected, don't select `git` separately"
 
 
 def detect_mode(prompt, modes):
@@ -238,7 +240,7 @@ def detect_mode(prompt, modes):
     if matches(LIMIT_AUDIT, w):
         return "audit"
     capped = matches(LIMIT_IMPLEMENT, w)
-    order = ["answer", "deliver", "plan", "implement", "audit"]
+    order = ["answer", "plan", "deliver", "implement", "audit"]
     found = [m for m in order if matches(modes[m], w)]
     if capped:
         found = [m for m in found if m != "deliver"]
@@ -254,6 +256,9 @@ def route(prompt, modes, caps, craft_floor, groups):
         if hit:
             selected.append(cap)
             files += [f for s in hit for f in s["files"]]
+    if "ado" in selected and "git" in selected:
+        selected.remove("git")  # ADO_OWNS_GIT
+        files = [f for f in files if f not in {f for s in caps["git"] for f in s["files"]}]
     if "ado" in selected and mode is None:
         mode = "audit"  # a bare work-item ID or URL is a dry run
     mode = mode or "implement"
@@ -296,9 +301,8 @@ def check_scenarios(modes, caps, never, craft_floor, groups, text):
                              cwd=ROOT, capture_output=True, text=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
         old = None
-    ado_files = {f for s in caps["ado"] for f in s["files"]} - {"references/frontend/testing.md",
-                                                               "references/frontend/review-and-release.md",
-                                                               "templates/pr-description.md"}
+    shared = {f for c, segs in caps.items() if c != "ado" for s in segs for f in s["files"]}
+    ado_files = {f for s in caps["ado"] for f in s["files"]} - shared
     skill_tokens = len(text) // 4
     print(f"\n{'scenario':30} {'mode':10} {'capabilities':34} {'tokens':>7} {'before':>7}  result")
     total_new = total_old = 0
@@ -327,7 +331,8 @@ def check_scenarios(modes, caps, never, craft_floor, groups, text):
     check(n >= 12, "need at least 12 routing scenarios")
     if total_old:
         print(f"{n} scenarios: ~{total_new // n} tokens/scenario vs ~{total_old // n} before "
-              f"({100 - 100 * total_new // total_old}% less context)")
+              f"({abs(100 - 100 * total_new // total_old)}% "
+              f"{'less' if total_new <= total_old else 'more'} context than the pre-router baseline)")
 
 
 # ------------------------------------------------------------------- budget
@@ -389,6 +394,21 @@ def check_package():
               f"upload description {len(pkg.UPLOAD_DESCRIPTION)} chars")
 
 
+# -------------------------------------------------------------- git sandbox
+def check_git_sandbox():
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    sys.dont_write_bytecode = True
+    import git_sandbox
+    try:
+        results = git_sandbox.run_checks()
+    except (OSError, AssertionError) as e:
+        check(False, f"git sandbox error: {e}")
+        return
+    for name, ok in results:
+        check(ok, f"git sandbox: {name}")
+    print(f"git sandbox: {sum(ok for _, ok in results)}/{len(results)} checks in a throwaway repository")
+
+
 # ----------------------------------------------------------------- security
 def check_security():
     secret = re.compile(r"(ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY|"
@@ -416,11 +436,13 @@ def main():
     limits = text.lower().replace("\u2019", "'")
     for phrase in (LIMIT_AUDIT + "," + LIMIT_IMPLEMENT).split(","):
         check(phrase.strip() in limits, f"limit phrase {phrase.strip()!r} not documented in SKILL.md")
+    check(ADO_OWNS_GIT in limits, "SKILL.md must say ado owns git")
     check_coverage(caps, never)
     check_budget(text)
     check_security()
     check_install_docs()
     check_package()
+    check_git_sandbox()
     check_scenarios(modes, caps, never, craft_floor, groups, text)
     if failures:
         print(f"\nFAILED ({len(failures)}):")

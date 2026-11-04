@@ -47,19 +47,22 @@
       "id": "unrelated-backend",
       "prompt": "Optimize this SQL query and add a database index for the reports table.",
       "caps": [], "mode": "implement", "outcome": ["skip"],
-      "must": [], "forbid": ["references/frontend/data-reports.md", "references/impeccable/reference/optimize.md"]
+      "must": [],
+      "forbid": ["references/frontend/data-reports.md", "references/impeccable/reference/optimize.md"]
     },
     {
       "id": "ambiguous-better",
       "prompt": "Make this dashboard better.",
       "caps": [], "mode": "implement", "outcome": ["clarify"],
-      "must": [], "forbid": ["references/impeccable/reference/operate.md", "references/impeccable/reference/critique.md"]
+      "must": [],
+      "forbid": ["references/impeccable/reference/operate.md", "references/impeccable/reference/critique.md"]
     },
     {
       "id": "discovery-guide",
       "prompt": "What can this skill do?",
       "caps": [], "mode": "answer", "outcome": ["guide"],
-      "must": ["GUIDE.md"], "forbid": ["references/impeccable/SOURCE_SKILL.md"]
+      "must": ["GUIDE.md"],
+      "forbid": ["references/impeccable/SOURCE_SKILL.md"]
     },
     {
       "id": "multi-new-landing-animate",
@@ -107,7 +110,8 @@
       "id": "non-ado-ticket",
       "prompt": "Deliver the Jira ticket PROJ-12.",
       "caps": [], "mode": "deliver", "outcome": ["clarify", "skip"],
-      "must": [], "forbid": []
+      "must": [],
+      "forbid": []
     },
     {
       "id": "review-pr",
@@ -143,6 +147,104 @@
       "caps": ["design-audit", "ios"], "mode": "audit",
       "must": ["references/impeccable/reference/audit.md", "references/impeccable/reference/audit.native.md", "references/impeccable/reference/ios.md"],
       "forbid": ["references/impeccable/reference/android.md", "references/impeccable/reference/craft-floor.md"]
+    },
+    {
+      "id": "git-status-audit",
+      "prompt": "Show me the git status and diff of this repo. Read-only.",
+      "caps": ["git"], "mode": "audit",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md", "references/workflows/azure-devops-delivery.md"]
+    },
+    {
+      "id": "git-sync-branch",
+      "prompt": "My feature branch is behind main; sync branch with the latest changes without losing my work.",
+      "caps": ["git"], "mode": "implement",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "git-safe-commit",
+      "prompt": "Commit only the files I changed for the login fix and push the branch.",
+      "caps": ["git"], "mode": "deliver",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md", "references/frontend/testing.md"]
+    },
+    {
+      "id": "git-open-mr",
+      "prompt": "Open a merge request on GitLab for this branch as a draft.",
+      "caps": ["git"], "mode": "deliver",
+      "must": ["references/workflows/git-workflow.md", "templates/pr-description.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md"]
+    },
+    {
+      "id": "git-review-pr",
+      "prompt": "Review pull request 42 on GitHub and summarize the risks. Don't change anything.",
+      "caps": ["git"], "mode": "audit",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md", "references/frontend/review-and-release.md"]
+    },
+    {
+      "id": "git-conflict",
+      "prompt": "Resolve the merge conflicts after rebasing my branch onto main.",
+      "caps": ["git"], "mode": "implement",
+      "must": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"],
+      "forbid": ["templates/pr-description.md"]
+    },
+    {
+      "id": "git-recover",
+      "prompt": "I accidentally deleted a branch with unpushed work; recover it.",
+      "caps": ["git"], "mode": "implement",
+      "must": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"],
+      "forbid": ["templates/pr-description.md"]
+    },
+    {
+      "id": "git-release",
+      "prompt": "Tag v2.1.0 and publish a GitHub release with the built ZIP. You are authorized to push the tag.",
+      "caps": ["git"], "mode": "deliver",
+      "must": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"],
+      "forbid": ["templates/pr-description.md"]
+    },
+    {
+      "id": "git-rewrite-plan",
+      "prompt": "Plan how to rewrite history to remove a leaked key and force push safely.",
+      "caps": ["git"], "mode": "plan",
+      "must": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"],
+      "forbid": ["templates/pr-description.md"]
+    },
+    {
+      "id": "git-plus-frontend",
+      "prompt": "Fix the typography on the pricing page, then commit it.",
+      "caps": ["typography", "git"], "mode": "deliver",
+      "must": ["references/impeccable/reference/typeset.md", "references/impeccable/reference/craft-floor.md", "references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "git-plus-backend",
+      "prompt": "Commit the database migration and push the branch.",
+      "caps": ["git"], "mode": "deliver",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/frontend/api-integration.md", "references/frontend/data-reports.md", "references/frontend/testing.md"]
+    },
+    {
+      "id": "git-plus-ado",
+      "prompt": "Implement Azure Boards work item 4521 locally and commit it, but don't push.",
+      "caps": ["ado"], "mode": "implement",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/frontend/testing.md", "references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "git-excluded-push-notification",
+      "prompt": "Add a push notification toggle to the settings screen.",
+      "caps": [], "mode": "implement", "outcome": ["clarify"],
+      "must": [],
+      "forbid": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"]
+    },
+    {
+      "id": "git-excluded-api-fetch",
+      "prompt": "Explain how the orders screen fetches data from the API.",
+      "caps": ["api"], "mode": "implement",
+      "must": ["references/frontend/api-integration.md"],
+      "forbid": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"]
     }
   ]
 }

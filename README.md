@@ -2,7 +2,7 @@
 
 > **Visual Craft. Fluid Motion. Exceptional Experiences.**
 
-UIUX Abhishek Design is a single, installable Agent Skill (`uiuxabhishek-design`) that gives AI coding agents senior-level UI/UX and frontend engineering judgment. It covers visual hierarchy, layout and typography, gesture physics, spring motion and accessible interaction, framework-neutral frontend delivery, and Azure DevOps ticket-to-draft-PR workflows.
+UIUX Abhishek Design is a single, installable Agent Skill (`uiuxabhishek-design`) that gives AI coding agents senior-level UI/UX and frontend engineering judgment. It covers visual hierarchy, layout and typography, gesture physics, spring motion and accessible interaction, framework-neutral frontend delivery, safe Git and repository workflows on any provider, and Azure DevOps ticket-to-draft-PR workflows.
 
 Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/abhishekinvission))**.
 
@@ -45,6 +45,7 @@ The bundled capabilities belong to this one skill. Install only `uiuxabhishek-de
 | **Fluid motion** | Direct manipulation, press feedback, interruptible transitions, velocity-aware springs, drag/flick, sheets and drawers, reduced motion |
 | **Platforms** | Responsive web, plus iOS and Android platform conventions where they apply |
 | **Frontend engineering** | Pages and routing, API integration, admin CRUD, data reports and exports, state management, testing, review and release readiness, shared packages and components, microfrontends |
+| **Git and repositories** | Status and diff, clone, fetch/pull, branches and sync, safe staging and commits, push, PR/MR creation and review, merges, conflict resolution, revert and recovery, tags, releases and fork/mirror sync on GitHub, GitLab, Azure Repos, Bitbucket or plain Git, for any language or framework |
 | **Azure DevOps delivery** | Azure Boards work item → live ticket read → PR reconciliation → clarification and dependency gates → safe Git preflight → implementation → ordered verification → authorized **draft** PR → structured report |
 | **Quality gates** | Accessibility, keyboard and focus behavior, contrast, performance, responsive verification and the project's real test/lint/build checks |
 
@@ -52,7 +53,7 @@ The bundled capabilities belong to this one skill. Install only `uiuxabhishek-de
 
 `SKILL.md` is a lightweight, agent-neutral router. For each request it:
 
-1. checks that the task is frontend/UI work (backend-only work loads nothing);
+1. checks that the task is frontend/UI, Git or Azure DevOps work (other backend-only work loads nothing);
 2. picks a **mode** (`answer`, `audit`, `plan`, `implement` or `deliver`) that caps what the agent may change;
 3. matches **capabilities** and loads only their files, in phases when several apply, with one owner per responsibility;
 4. follows the project's real stack and conventions over reference examples.
@@ -60,6 +61,8 @@ The bundled capabilities belong to this one skill. Install only `uiuxabhishek-de
 Design tasks go straight to the matching Impeccable playbook instead of its full entry point. Playbooks that need upstream tooling are never loaded. Routing relies only on plain Markdown, with no hooks, subagents, MCP servers or vendor-specific tools.
 
 It doesn't impose a single visual style, framework, library or test runner. Your product's existing design system, repository conventions, accessibility requirements and explicit scope take priority.
+
+**Git workflows** run for any repository and stack. The skill detects the real state, remotes, provider, conventions and signed-in tools first. It preserves uncommitted work and does only the writes you name. Merges, destructive resets, force-pushes, branch or tag deletion, published-history rewrites and releases each need your explicit approval, and owning the repository doesn't count as approval.
 
 **Azure DevOps delivery** is opt-in. It runs only for Azure Boards work, needs an approved, authenticated Azure DevOps connector or `az` CLI that your agent can already use, and never guesses the organization, project, repository or target branch. Without write authorization it stays in audit/dry-run mode. It never merges, deploys or edits ticket state on its own.
 
@@ -72,6 +75,14 @@ Describe the task. The skill picks the mode and the capabilities on its own, and
 - *"Use uiuxabhishek-design to make this bottom sheet draggable with interruptible spring motion."* Loads the fluid-motion guide.
 - *"Use uiuxabhishek-design to add an admin users table with pagination, filters, edit forms and tests."* Combines CRUD, reports and testing in phases.
 - *"What can uiuxabhishek-design do?"* Shows the capability guide ([`GUIDE.md`](skills/uiuxabhishek-design/GUIDE.md)).
+
+**Git** works the same way for any project:
+
+- *"Use uiuxabhishek-design to show the git status and diff. Read-only."* Inspects only.
+- *"Commit only the files for the login fix and push the branch."* Stages explicit paths, checks the diff and pushes the task branch. It doesn't open a PR.
+- *"Open a draft merge request on GitLab for this branch."* Uses `glab` if it's signed in, or gives you manual steps.
+- *"Resolve the merge conflicts after my rebase."* Resolves from evidence and stops to ask about ambiguous hunks.
+- *"Plan a v2.1.0 tag and GitHub release."* Plans only. Publishing it needs your explicit go-ahead.
 
 **Azure DevOps** is a separate workflow that only starts for Azure DevOps/Azure Boards work, never for Jira, GitHub or Linear tickets:
 
@@ -94,7 +105,7 @@ skills/uiuxabhishek-design/
     ├── impeccable/     # Visual craft (third-party)
     ├── apple-design/   # Interaction and motion (third-party)
     ├── frontend/       # Frontend engineering guides (original)
-    └── workflows/      # Azure DevOps delivery (original)
+    └── workflows/      # Git workflow and Azure DevOps delivery (original)
 LICENSE                 # MIT license for original UIUX Abhishek Design work
 NOTICE.md               # Ownership, attribution and redistribution notice
 SOURCES.md              # Provenance and SHA-256 checksums of bundled third-party files

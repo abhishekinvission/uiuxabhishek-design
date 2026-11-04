@@ -74,12 +74,14 @@ Paths are relative to `skills/uiuxabhishek-design/references/`.
 | Content | Origin | License |
 | --- | --- | --- |
 | `references/frontend/` (9 guides), `references/workflows/` (2 guides), `templates/` (2 templates) | *UIUX Abhishek Design Frontend Engineering Expansion* pack, supplied by the maintainer on 2026-11-03 (`uiuxabhishek-frontend-expansion.zip`, SHA-256 `4a86b38a1efa79b8dfd0760eec70ff2ba2e53b80c9b417a869525c7521a83db1`) | MIT (© Abhishek Rampal) |
+| `references/workflows/git-workflow.md`, `references/workflows/git-recovery-and-release.md` | Universal Git & Repository Workflow, written for this project on 2026-11-04 (no third-party text) | MIT (© Abhishek Rampal) |
 
 The pack describes itself as framework-independent guides written for this project, with application-specific files from an earlier private archive excluded. It contains no third-party text, source code, URLs or credentials. Changes made during integration:
 
 - Removed stack- and domain-specific identifiers (named framework/library stack, a fixed `development` branch, domain-specific tenancy terms).
 - Removed duplicated gate and review steps from `azure-devops-delivery.md` in favor of links to `testing.md` and `review-and-release.md`; `review-and-release.md` now points to `templates/pr-description.md`.
 - Converted cross-references to relative Markdown links.
+- 2026-11-04: moved the generic Git preflight, staging, commit and push steps of `azure-devops-delivery.md` into the shared `git-workflow.md`, which ADO now links to; the Azure-specific ticket, PR and comment steps are unchanged.
 - Not imported: the pack's `PACKAGE_MANIFEST.json`, `README.md` and `integration/` instructions (installer metadata, merged into `SKILL.md` routing instead).
 
 Checksums (paths relative to `skills/uiuxabhishek-design/`):
@@ -94,6 +96,8 @@ Checksums (paths relative to `skills/uiuxabhishek-design/`):
 - `references/frontend/state-management.md  110f8342d6a899a0c9a1e07c351200fcd6ef08b262bfd7ced98430418eaa2cb6`
 - `references/frontend/testing.md  cc71b889040f77e4a10c14240c02d42df610db893a62dc112bcac5a6b4ce5337`
 - `references/workflows/ado-configuration.md  f18ab5459e39f3d0a72ae66f92748f8ef3530c2c870db0beee23f19c01c67629`
-- `references/workflows/azure-devops-delivery.md  aebd009e9da4dbb167bf9a8419dfda2445d5d8a5e1658800f63fa59a68649482`
+- `references/workflows/azure-devops-delivery.md  2b668c524d2506f21851885947ad5b57c8e881baa0edc943a23c61fdeb1b8ea4`
+- `references/workflows/git-recovery-and-release.md  360437c2addb9c9a9759cea5fc007e741fe2cf618ca52eca5495d935c6b1ddda`
+- `references/workflows/git-workflow.md  edf71c17638179abdd12b66067a51e6bda7f8a9be8b8de202447f9fe482db8e7`
 - `templates/ado-delivery-report.md  6673430bb2dfeed82758d1b459f82a699b4b4fad636c506a863e00a342e7783f`
 - `templates/pr-description.md  ed01966273e1e72cdc6c76c8d93a63060fdb3fb8b1e4a0ae0bfd1ab0fa9d3b94`

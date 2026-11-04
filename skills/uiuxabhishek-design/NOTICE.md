@@ -5,7 +5,7 @@ Created and maintained by Abhishek Rampal (uiuxAbhishek) — <https://github.com
 
 ## Ownership
 
-- **Original work.** The routing `SKILL.md`, integration architecture, documentation, maintenance policy, the frontend engineering guides (`references/frontend/`), the Azure DevOps delivery guides (`references/workflows/`) and `templates/` were written for this project. They are © 2026 Abhishek Rampal and licensed under the MIT License (`LICENSE`).
+- **Original work.** The routing `SKILL.md`, integration architecture, documentation, maintenance policy, the frontend engineering guides (`references/frontend/`), the Azure DevOps delivery and Git workflow guides (`references/workflows/`) and `templates/` were written for this project. They are © 2026 Abhishek Rampal and licensed under the MIT License (`LICENSE`).
 - **Third-party work.** Material under `references/impeccable/` and `references/apple-design/` comes from the sources below. It remains the work of its respective authors and is redistributed under their original licenses. Bundling, renaming, reorganising or routing to this material does not transfer its copyright or ownership to Abhishek Rampal or anyone else.
 
 ## Third-party sources

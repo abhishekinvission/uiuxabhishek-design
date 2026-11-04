@@ -2,7 +2,7 @@
 
 **When to use:** an Azure Boards work item ID/URL or an explicit request to deliver a requirement through Azure DevOps. This is optional and works with any supported project stack; it does **not** require any specific framework or directory structure.
 
-Read [ado-configuration.md](ado-configuration.md) first. Also read [review-and-release.md](../frontend/review-and-release.md), [testing.md](../frontend/testing.md) and only the frontend references needed by the ticket.
+Read [ado-configuration.md](ado-configuration.md) first. Before implementing or delivering, also read [git-workflow.md](git-workflow.md) (shared Git detection, approval gates and publishing), [review-and-release.md](../frontend/review-and-release.md), [testing.md](../frontend/testing.md) and only the frontend references needed by the ticket. This file adds the Azure-specific ticket-to-PR lifecycle on top; where they differ, the stricter rule applies.
 
 ## Input and modes
 - Accept work item URL/ID (when Azure project/organization clear), or requirement text with an explicitly supplied ticket context.
@@ -36,11 +36,10 @@ Read [ado-configuration.md](ado-configuration.md) first. Also read [review-and-r
 - Proposed unconfirmed contracts must be labeled `UNCONFIRMED`; keep typed fixtures test-only, never claim integration works or import mock data into production.
 
 ### 4. Safe Git preflight
-- Fetch latest remote state (read-only); inspect current branch, `git status`, remote tracking, upstream branch policy and existing ticket branches.
-- Never overwrite, clean, stash or reset developer changes. If dirty, preserve them and use a separate worktree when safe/authorized.
-- Select base/target from **this repository's policy**, never a hardcoded branch name. Create a task branch only with permission and a collision-safe name.
-- Don't change global Git identity; repository-local identity if required only with the user's own provided verified values.
-- No force push, branch deletion, disabling hooks, bypassing protection, or direct commit to protected branches.
+- Fetch latest remote state (read-only); inspect current branch, `git status`, remote tracking, upstream branch policy and existing ticket branches, as in [git-workflow.md](git-workflow.md) §1.
+- Preserve developer changes (git-workflow.md §3); use a separate worktree when the tree is dirty and that is safe and authorized.
+- Select base/target from **this repository's policy**, never a hardcoded branch name. Create a task branch only with permission and a collision-safe name that includes the ticket ID when conventions require it.
+- The approval gates in git-workflow.md §2 apply: no force push, branch deletion, disabled hooks, bypassed protection or direct commit to protected branches.
 
 ### 5. Plan and implement the smallest complete scope
 - Trace requirement to actual code and routes; map acceptance criteria to implementation and tests. No surprise dependencies or unrelated refactors.
@@ -63,8 +62,7 @@ Read [ado-configuration.md](ado-configuration.md) first. Also read [review-and-r
 - Confirm publish authorization, allowed branch, repository-local identity and approved tool access **before** any write.
 
 ### 8. Commit, push, create **draft** PR (only when authorized)
-- Stage explicit task files; preserve developer's existing edits; use local repo identity and an informative ticket-linked commit message per repo conventions.
-- Push only the task branch to its configured remote, never protected base. Verify remote SHA if tools permit.
+- Stage, commit and push the task branch per [git-workflow.md](git-workflow.md) §4–6, with an informative ticket-linked commit message per repo conventions. Verify the remote SHA if tools permit.
 - For Azure Repos, use approved connector or official Azure CLI/API. Example (substitute real values; do not execute blindly):
   `az repos pr create --repository <repo> --source-branch <task> --target-branch <base> --title "<title>" --description "<summary>" --draft true --work-items <id>`
 - For GitHub-linked repos use the approved GitHub PR tool; link ticket through supported provider workflow.

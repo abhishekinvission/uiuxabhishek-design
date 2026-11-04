@@ -1,11 +1,11 @@
 ---
 name: uiuxabhishek-design
-description: UI/UX design and frontend engineering router. Use for visual design, layout, typography, color, UX copy, accessibility and design audits, responsive and native-platform UI, animation, gestures and spring motion; frontend pages, API integration, admin CRUD, reports, state, tests, code review, shared components and microfrontends; and Azure DevOps (Azure Boards) work-item-to-draft-PR delivery. Loads only the guidance a task needs. Not for backend-only, infrastructure or non-UI work.
+description: UI/UX design, frontend engineering and Git workflow router. Use for visual design, layout, typography, color, UX copy, accessibility and design audits, responsive and native-platform UI, animation, gestures and spring motion; frontend pages, API integration, admin CRUD, reports, state, tests, code review, shared components and microfrontends; Azure DevOps (Azure Boards) work-item-to-draft-PR delivery; and Git repository workflows (commits, branches, PRs/MRs, conflicts, recovery, tags and releases) on any provider. Loads only the guidance a task needs. Not for backend-only, infrastructure or non-UI work except Git and ADO.
 license: MIT for UIUX Abhishek Design original work; bundled references keep their upstream licenses (see NOTICE.md)
 metadata:
   author: Abhishek Rampal (uiuxAbhishek)
   repository: https://github.com/abhishekinvission/uiuxabhishek-design
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 # UIUX Abhishek Design
 
@@ -13,7 +13,7 @@ metadata:
 
 ## 1. Classify
 
-1. **Scope.** Frontend/UI work only. For a backend-only, database or infrastructure task, load nothing; for a mixed task, apply this skill to the frontend part only.
+1. **Scope.** Frontend/UI work, plus `git` and `ado` (§2 Workflows), which apply to any repository and stack. For any other backend-only, database or infrastructure task, load nothing; for a mixed task, apply only the matching parts.
 2. **Mode** (table below) caps what you may change.
 3. **Capabilities** (§2): one primary capability owns the deliverable. Add others only for a distinct responsibility (§3).
 4. **Project facts.** Inspect the real stack, design system, conventions, tests and repository instructions first, and follow them over reference examples.
@@ -23,12 +23,12 @@ metadata:
 | Mode | Signals | May change |
 | --- | --- | --- |
 | `answer` | what can, capabilities | nothing |
-| `audit` | audit, review, critique, assess, check | nothing; findings only |
+| `audit` | audit, review, critique, assess, check, status, diff | nothing; findings only |
 | `plan` | plan, spec, propose, brief | nothing; a written plan |
-| `implement` | build, add, create, fix, implement, change, make, refactor | in-scope files and the project's own checks; no commit, push, PR or ticket writes |
-| `deliver` | commit, push, open a pr, deliver, publish | commit, task-branch push and a **draft** PR, only with explicit user or repository-policy authorization |
+| `implement` | build, add, create, fix, implement, change, make, refactor | in-scope files and the project's own checks; a local commit only when asked; no push, PR or ticket writes |
+| `deliver` | commit, git push, push the branch, push the tag, push it, open a pr, open a pull request, open a merge request, deliver, publish, tag, release | only the writes the request names (commit, task-branch push, **draft** PR/MR), with explicit user or repository-policy authorization |
 
-Limits win: "read-only", "dry run", "report only" or "don't change" means `audit`; "don't push", "no PR" or "locally" means at most `implement`. Otherwise `deliver` > `plan` > `implement` > `audit`. Never merge, deploy, force-push, or change credentials, permissions or ticket state unless asked separately.
+Limits win: "read-only", "dry run", "report only" or "don't change" means `audit`; "don't push", "no PR" or "locally" means at most `implement`. Otherwise `plan` > `deliver` > `implement` > `audit`. Never merge, deploy, force-push, delete or move branches/tags, rewrite published history, discard uncommitted work, or change credentials, permissions or ticket state unless explicitly asked for that operation and target; owning the repository is not authorization. [git-workflow.md](references/workflows/git-workflow.md) §2 lists the gates.
 
 ## 2. Capability map
 
@@ -71,16 +71,22 @@ Each route is `signals → files`. A `+` item loads only when its capability is 
 | `review` | code review, release readiness, pr readiness → `review-and-release.md` · +pr description → [PR template](templates/pr-description.md) |
 | `packages` | npm package, publishable, component library, shared component → `packages-and-components.md` |
 | `microfrontends` | microfrontend, module federation, remote module → `microfrontends.md` |
-| `ado` | azure devops, azure boards, ado, work item, dev.azure.com → [delivery](references/workflows/azure-devops-delivery.md) + [configuration](references/workflows/ado-configuration.md) + [report template](templates/ado-delivery-report.md) · +implement or deliver → `testing.md` + `review-and-release.md` · +deliver → [PR template](templates/pr-description.md) |
+| `ado` | azure devops, azure boards, ado, work item, dev.azure.com → [delivery](references/workflows/azure-devops-delivery.md) + [configuration](references/workflows/ado-configuration.md) + [report template](templates/ado-delivery-report.md) · +implement or deliver → `testing.md` + `review-and-release.md` + [Git workflow](references/workflows/git-workflow.md) · +deliver → [PR template](templates/pr-description.md) |
 
-`ado` is **only** for Azure DevOps/Azure Boards work. A Jira, GitHub or Linear ticket, or "a ticket" alone, is not ADO. A bare work-item ID or URL means `audit` (dry run). `ado` orchestrates the task: it adds the capabilities the ticket needs as each phase starts, and never infers the organization, project, repository or base branch.
+**Workflows**: apply to any repository; bare names are in `references/workflows/`
+
+| ID | Route |
+| --- | --- |
+| `git` | git, repo, repository, commit, push the branch, pull request, merge request, merge conflict, rebase, cherry-pick, stash, revert commit, reflog, force push, deleted branch, create branch, sync branch, sync fork, branch protection, behind main, github, gitlab, bitbucket, azure repos, git tag, publish release → `git-workflow.md` · +conflict, revert, recover, reflog, reset, rebase, cherry-pick, force push, rewrite history, deleted branch, tag, release → `git-recovery-and-release.md` · +open a pr, open a pull request, open a merge request, create a pull request, pr description → [PR template](templates/pr-description.md) |
+
+`git` covers repository operations, not code that merely mentions Git, and runs beside other capabilities. `ado` loads it itself: when `ado` is selected, don't select `git` separately. `ado` is **only** for Azure DevOps/Azure Boards work. A Jira, GitHub or Linear ticket, or "a ticket" alone, is not ADO. A bare work-item ID or URL means `audit` (dry run). `ado` orchestrates the task: it adds the capabilities the ticket needs as each phase starts, and never infers the organization, project, repository or base branch.
 
 **Never load** (they need upstream Impeccable tooling that isn't bundled): `live.md`, `live-setup.md`, `hooks.md`, `doctor.md`, `visualize.md`, `routing.md`, `init.md`, `craft.md`, `degraded/*`.
 
 ## 3. Combining capabilities
 
 - **Phases.** Load supporting references when their phase starts. More than three references means phasing, not loading more at once.
-- **Ownership.** Impeccable: look, hierarchy, copy and how states read. `animate`: whether and where motion appears. `fluid-motion`: gesture and spring physics. Frontend guides: contracts, state and routing. `testing`: gate order. `review`: diff and release checks. `ado`: ticket, branch and PR lifecycle.
+- **Ownership.** Impeccable: look, hierarchy, copy and how states read. `animate`: whether and where motion appears. `fluid-motion`: gesture and spring physics. Frontend guides: contracts, state and routing. `testing`: gate order. `review`: diff and release-readiness checks. `git`: repository state, branches, history and publishing gates. `ado`: the Azure ticket-to-PR lifecycle on top of `git`.
 - **Shared baseline** (apply once, however many references restate it): user scope and repository rules; existing conventions and dependencies; server-side authorization; no secrets or personal data in code, logs or bundles; report exact commands and results, never unrun checks.
 - **Precedence.** User scope and repository rules > design system and product requirements > security, accessibility and performance > reference guidance > embellishment.
 
