@@ -4,8 +4,10 @@ Standard library only. Run from anywhere:  python3 tests/validate.py [--cli]
 
 Checks: single-skill discovery and frontmatter, Markdown links, SOURCES.md
 checksums and inventory, license/notice mirrors, router parsing and
-reference coverage, routing scenarios, context budget and a basic
-secret/executable scan. --cli also runs `npx skills add . --list`.
+reference coverage, routing scenarios, context budget, a basic
+secret/executable scan, README install commands and the Claude upload ZIP
+(built to a temporary folder). --cli also runs `npx skills add . --list` and
+a real global install for every documented agent into a throwaway HOME.
 
 Routing scenarios use a deterministic keyword simulation of SKILL.md's
 signal tables. It checks that the router's signals, conditions and file
@@ -18,12 +20,17 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
+import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILL = os.path.join(ROOT, "skills", "uiuxabhishek-design")
 THIRD_PARTY = ("references/impeccable/", "references/apple-design/")
 BASELINE_COMMIT = "036b394"  # last commit before the router rewrite
 FRONTMATTER_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+REPO = "abhishekinvission/uiuxabhishek-design"
+AGENTS = ("claude-code", "codex", "gemini-cli", "github-copilot", "antigravity")
+UPLOAD_MAX_BYTES = 8 * 1024 * 1024  # Claude API skill upload limit
 SKILL_MD_MAX_CHARS = 12000
 GUIDE_MAX_CHARS = 5000
 UI_WORDS = {"ui", "page", "screen", "dashboard", "component", "frontend", "design", "interface", "view"}
@@ -68,6 +75,8 @@ def check_discovery():
     check(top.get("name") == "uiuxabhishek-design", "frontmatter name must be uiuxabhishek-design")
     desc = top.get("description", "")
     check(0 < len(desc) <= 1024, f"description length {len(desc)} not in 1..1024")
+    for k in ("name", "description"):
+        check(not re.search(r":\s|\s#", top.get(k, "")), f"frontmatter {k} needs YAML quoting")
     print(f"discovery: 1 skill, description {len(desc)} chars")
 
 
@@ -81,6 +90,22 @@ def check_cli():
     names = re.findall(r"^│ {4}([a-z0-9-]+)\s*$", out, re.M)
     check(names == ["uiuxabhishek-design"], f"skills CLI discovered {names}")
     print(f"skills CLI: {names}")
+    with tempfile.TemporaryDirectory() as home:
+        env = dict(os.environ, HOME=home, DISABLE_TELEMETRY="1", DO_NOT_TRACK="1")
+        env.pop("CLAUDE_CONFIG_DIR", None)
+        env.pop("CODEX_HOME", None)
+        cmd = ["npx", "--yes", "skills", "add", ROOT, "--skill", "uiuxabhishek-design", "-g", "-y"]
+        for a in AGENTS:
+            cmd += ["-a", a]
+        try:
+            run = subprocess.run(cmd, cwd=home, env=env, capture_output=True, text=True, timeout=300)
+        except (OSError, subprocess.TimeoutExpired) as e:
+            check(False, f"skills CLI install failed: {e}")
+            return
+        installed = [rel(os.path.join(r, "SKILL.md"), home) for r, _, fs in os.walk(home, followlinks=True)
+                     if "SKILL.md" in fs and os.path.basename(r) == "uiuxabhishek-design"]
+        check(run.returncode == 0 and installed, f"global install for {AGENTS} failed: {run.stderr[-300:]}")
+        print(f"skills CLI: global install for {len(AGENTS)} agents -> {sorted(installed)}")
 
 
 # -------------------------------------------------------------------- links
@@ -314,6 +339,56 @@ def check_budget(text):
     print(f"budget: SKILL.md ~{len(text) // 4} tokens, GUIDE.md ~{len(guide) // 4} tokens")
 
 
+# ------------------------------------------------------------------ install
+def check_install_docs():
+    readme = read(os.path.join(ROOT, "README.md"))
+    base = f"npx skills add {REPO} --skill uiuxabhishek-design -g"
+    allc = base + "".join(f" -a {a}" for a in AGENTS) + " -y"
+    check(allc in readme, "README lacks the all-agent global install command")
+    for a in AGENTS:
+        check(f"{base} -a {a} -y" in readme, f"README lacks the global install command for {a}")
+    for cmd in re.findall(r"npx skills add (\S+)", readme):
+        check(cmd == REPO, f"README install command uses {cmd!r}")
+    check("## Install UIUX Abhishek Design" in readme[:4000], "install section is not near the top of README")
+    print(f"install docs: all-agent and {len(AGENTS)} per-agent commands present")
+
+
+def check_package():
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    sys.dont_write_bytecode = True
+    import package_skill as pkg
+    with tempfile.TemporaryDirectory() as out:
+        path, digest = pkg.build(out)
+        check(pkg.build(os.path.join(out, "again"))[1] == digest, "upload ZIP build is not deterministic")
+        check(os.path.getsize(path) <= UPLOAD_MAX_BYTES, "upload ZIP exceeds 8 MB")
+        with zipfile.ZipFile(path) as z:
+            infos = z.infolist()
+            names = [i.filename for i in infos]
+            check(all(n.startswith("uiuxabhishek-design/") for n in names), "ZIP root must be uiuxabhishek-design/")
+            check(all((i.external_attr >> 16) & 0o777 == 0o644 for i in infos), "ZIP entries must be 0644 files")
+            expected = {f"uiuxabhishek-design/{r}" for _, r in pkg.files()}
+            check(set(names) == expected, f"ZIP contents drift: {sorted(set(names) ^ expected)[:5]}")
+            for req in ("SKILL.md", "GUIDE.md", "LICENSE", "NOTICE.md", "LICENSES/IMPECCABLE_NOTICE.md",
+                        "references/impeccable/SOURCE_SKILL.md", "templates/pr-description.md"):
+                check(f"uiuxabhishek-design/{req}" in names, f"ZIP lacks {req}")
+            for n in names:
+                data, src = z.read(n), os.path.join(SKILL, n.split("/", 1)[1])
+                if n.endswith("/SKILL.md"):
+                    text, orig = data.decode("utf-8"), read(src)
+                    m = re.search(r"^name: (.*)$", text, re.M)
+                    d = re.search(r"^description: (.*)$", text, re.M)
+                    check(m and m.group(1) == "uiuxabhishek-design", "packaged SKILL.md name mismatch")
+                    check(d and 0 < len(d.group(1)) <= pkg.UPLOAD_DESCRIPTION_MAX, "packaged description > 200 chars")
+                    check(d and not re.search(r":\s|\s#", d.group(1)), "packaged description needs YAML quoting")
+                    strip = lambda t: re.sub(r"^description: .*$", "", t, count=1, flags=re.M)
+                    check(strip(text) == strip(orig), "packaged SKILL.md differs beyond its description")
+                else:
+                    with open(src, "rb") as f:
+                        check(f.read() == data, f"ZIP copy of {n} differs")
+        print(f"package: {os.path.basename(path)}, {len(names)} files, {os.path.getsize(path) // 1024} KB, "
+              f"upload description {len(pkg.UPLOAD_DESCRIPTION)} chars")
+
+
 # ----------------------------------------------------------------- security
 def check_security():
     secret = re.compile(r"(ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY|"
@@ -344,6 +419,8 @@ def main():
     check_coverage(caps, never)
     check_budget(text)
     check_security()
+    check_install_docs()
+    check_package()
     check_scenarios(modes, caps, never, craft_floor, groups, text)
     if failures:
         print(f"\nFAILED ({len(failures)}):")

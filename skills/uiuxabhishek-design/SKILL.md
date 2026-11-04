@@ -5,6 +5,7 @@ license: MIT for UIUX Abhishek Design original work; bundled references keep the
 metadata:
   author: Abhishek Rampal (uiuxAbhishek)
   repository: https://github.com/abhishekinvission/uiuxabhishek-design
+  version: "1.0.0"
 ---
 # UIUX Abhishek Design
 

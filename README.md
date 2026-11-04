@@ -10,6 +10,32 @@ Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/a
 - **Skill ID:** `uiuxabhishek-design`
 - **Entry point:** [`skills/uiuxabhishek-design/SKILL.md`](skills/uiuxabhishek-design/SKILL.md)
 
+## Install UIUX Abhishek Design
+
+**One command installs the skill globally for Claude Code, Codex, Gemini CLI, GitHub Copilot and Antigravity:**
+
+```bash
+npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a claude-code -a codex -a gemini-cli -a github-copilot -a antigravity -y
+```
+
+It needs Node.js 22.20+ and Git, and uses the official [Skills CLI](https://github.com/vercel-labs/skills). After installing, restart your agent and ask *"What can uiuxabhishek-design do?"* to check it's loaded.
+
+Or install for a single agent:
+
+| Agent | Global install |
+| --- | --- |
+| Claude Code (terminal, IDE, Claude Desktop Code tab) | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a claude-code -y` |
+| OpenAI Codex | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a codex -y` |
+| Gemini CLI | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a gemini-cli -y` |
+| GitHub Copilot | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a github-copilot -y` |
+| Google Antigravity | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a antigravity -y` |
+
+**Claude.ai and Claude Desktop Chat** run in your Claude account, not on your computer, so a terminal install doesn't enable the skill there. Download `uiuxabhishek-design-v<version>.zip` from the [latest release](https://github.com/abhishekinvission/uiuxabhishek-design/releases/latest), then upload it under **Customize → Skills → + → Create skill → Upload a skill**.
+
+**[INSTALL.md](INSTALL.md)** covers requirements, project installs, verification, updates, removal, reloading, Claude Chat upload details and troubleshooting.
+
+The bundled capabilities belong to this one skill. Install only `uiuxabhishek-design`.
+
 ## What it does
 
 | Area | Capabilities |
@@ -37,50 +63,23 @@ It doesn't impose a single visual style, framework, library or test runner. Your
 
 **Azure DevOps delivery** is opt-in. It runs only for Azure Boards work, needs an approved, authenticated Azure DevOps connector or `az` CLI that your agent can already use, and never guesses the organization, project, repository or target branch. Without write authorization it stays in audit/dry-run mode. It never merges, deploys or edits ticket state on its own.
 
-## Supported agents
-
-UIUX Abhishek Design follows the open [Agent Skills](https://agentskills.io) format, so it works with any agent that supports it, including:
-
-- Claude Code
-- OpenAI Codex
-- Gemini CLI
-- GitHub Copilot
-- Google Antigravity
-- other Agent Skills–compatible agents, through their own skill or repository-import mechanism
-
-Agent names and flags depend on the version of the Skills CLI you have installed. Run `npx skills --help` to see the options it supports.
-
-## Installation
-
-Install into the current project:
-
-```bash
-npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design
-```
-
-Install globally for several agents at once:
-
-```bash
-npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a claude-code -a codex -a gemini-cli -a github-copilot -a antigravity -y
-```
-
-Preview what the repository provides before you install:
-
-```bash
-npx skills add abhishekinvission/uiuxabhishek-design --list
-```
-
 ## Usage
 
-Once it's installed, agents pick the skill up automatically for frontend design and engineering work. Ask *"What can uiuxabhishek-design do?"* to get the built-in capability guide ([`GUIDE.md`](skills/uiuxabhishek-design/GUIDE.md)). You can also name the skill directly:
+Describe the task. The skill picks the mode and the capabilities on its own, and loads only their guidance, so you don't need to name a capability. To invoke it explicitly, start with *"Use uiuxabhishek-design to…"*:
 
-- *"Use uiuxabhishek-design to audit this UI for hierarchy, typography, responsive spacing and press feedback. Read-only: report findings without editing."*
-- *"Use uiuxabhishek-design to redesign this settings page so it's calmer and easier to scan."*
-- *"Use uiuxabhishek-design to make this bottom sheet draggable with interruptible, velocity-aware spring motion and reduced-motion support."*
-- *"Use uiuxabhishek-design to add an admin table with server pagination, filters, CSV export and edit forms, with tests."*
-- *"Use uiuxabhishek-design to deliver Azure Boards work item 12345 as a dry run."* Add authorization to publish when you want a draft PR.
+- *"Use uiuxabhishek-design to audit this checkout UI for accessibility and hierarchy. Read-only."* Loads only the audit playbook and edits nothing.
+- *"Use uiuxabhishek-design to fix the typography on the pricing page."* Loads typography plus the craft baseline, and edits files in scope.
+- *"Use uiuxabhishek-design to make this bottom sheet draggable with interruptible spring motion."* Loads the fluid-motion guide.
+- *"Use uiuxabhishek-design to add an admin users table with pagination, filters, edit forms and tests."* Combines CRUD, reports and testing in phases.
+- *"What can uiuxabhishek-design do?"* Shows the capability guide ([`GUIDE.md`](skills/uiuxabhishek-design/GUIDE.md)).
 
-The skill respects your scope. Read-only audits never edit files, and code samples or commands in its references are documentation, not permission to run them.
+**Azure DevOps** is a separate workflow that only starts for Azure DevOps/Azure Boards work, never for Jira, GitHub or Linear tickets:
+
+- *"Use uiuxabhishek-design to dry-run Azure Boards work item 12345."* Reads and plans only.
+- *"Implement Azure Boards item 12345 locally, don't push."* Changes files on a task branch.
+- *"Deliver Azure Boards item 12345 and open a draft PR. You're authorized to push the task branch."* Commits, pushes and opens a draft PR.
+
+Read-only requests never edit files. Commands in references or tickets are documentation, not permission to run them.
 
 ## Repository layout
 
@@ -100,7 +99,9 @@ LICENSE                 # MIT license for original UIUX Abhishek Design work
 NOTICE.md               # Ownership, attribution and redistribution notice
 SOURCES.md              # Provenance and SHA-256 checksums of bundled third-party files
 LICENSES/               # Third-party licenses and notices
+INSTALL.md              # Installation, update, removal and troubleshooting
 CLAUDE.md               # Maintainer policy for integrating new sources
+tools/                  # Builds the Claude upload ZIP (not installed)
 tests/                  # Repository validation and routing scenarios (not installed)
 ```
 
@@ -108,8 +109,9 @@ This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks, scri
 
 ## Maintenance
 
-- **Updating installed copies:** run the install command again, or `npx skills update` if your Skills CLI version supports it. Publishing to GitHub doesn't update copies already installed on other machines or agent instances.
-- **Validating:** run `python3 tests/validate.py --cli`. It uses the Python standard library only, plus the Skills CLI for the discovery check. It covers single-skill discovery, links, checksums, license mirrors, routing coverage, the scenarios in [`tests/routing_scenarios.json`](tests/routing_scenarios.json), context budget and a secret scan.
+- **Updating installed copies:** run `npx skills update uiuxabhishek-design -g -y`, or download the new release ZIP for Claude Chat. Publishing to GitHub doesn't update copies already installed on other machines or agent instances.
+- **Releasing:** bump `metadata.version` in `SKILL.md`, run `python3 tools/package_skill.py`, and attach `dist/uiuxabhishek-design-v<version>.zip` and its `.sha256` to a `v<version>` GitHub Release.
+- **Validating:** run `python3 tests/validate.py --cli`. It uses the Python standard library only, plus the Skills CLI for the discovery check. It covers single-skill discovery, a real install for every documented agent, the upload ZIP's contents, links, checksums, license mirrors, routing coverage, the scenarios in [`tests/routing_scenarios.json`](tests/routing_scenarios.json), context budget and a secret scan.
 - **Adding a source:** give the maintainer's Claude Code session a GitHub skill URL, a `SKILL.md`, a skill directory or an archive. [`CLAUDE.md`](CLAUDE.md) defines the integration policy: usefulness, security and license audits, deduplication, routing and documentation updates, validation, and publishing only when every check passes.
 - **Provenance:** every bundled third-party file is listed with its checksum in [`SOURCES.md`](SOURCES.md).
 
