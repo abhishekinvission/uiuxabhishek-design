@@ -1,0 +1,148 @@
+{
+  "_comment": "Routing scenarios for skills/uiuxabhishek-design/SKILL.md. Paths are relative to the skill root. 'forbid' lists files that must not be loaded; validate.py also forbids tool-dependent playbooks and ADO files everywhere unless 'ado' is expected.",
+  "scenarios": [
+    {
+      "id": "single-typography",
+      "prompt": "Fix the typography on our pricing page, the headings and body text feel cramped.",
+      "caps": ["typography"], "mode": "implement",
+      "must": ["references/impeccable/reference/typeset.md", "references/impeccable/reference/craft-floor.md"],
+      "forbid": ["references/impeccable/SOURCE_SKILL.md", "references/apple-design/SOURCE_SKILL.md", "references/impeccable/reference/new-work.md", "references/frontend/pages-and-routing.md"]
+    },
+    {
+      "id": "single-fluid-motion",
+      "prompt": "Make the bottom sheet draggable with spring physics and velocity-aware dismissal.",
+      "caps": ["fluid-motion"], "mode": "implement",
+      "must": ["references/apple-design/SOURCE_SKILL.md", "references/impeccable/reference/craft-floor.md"],
+      "forbid": ["references/impeccable/SOURCE_SKILL.md", "references/impeccable/reference/animate.md"]
+    },
+    {
+      "id": "readonly-a11y-audit",
+      "prompt": "Audit this checkout UI for accessibility, keyboard navigation and contrast. Read-only, report only.",
+      "caps": ["design-audit"], "mode": "audit",
+      "must": ["references/impeccable/reference/audit.md"],
+      "forbid": ["references/impeccable/reference/craft-floor.md", "references/impeccable/reference/critique.md", "references/frontend/review-and-release.md"]
+    },
+    {
+      "id": "multi-crud-reports",
+      "prompt": "Add an admin users table with server-side pagination, filters, and create, edit and delete with confirmation.",
+      "caps": ["crud", "reports"], "mode": "implement",
+      "must": ["references/frontend/admin-crud.md", "references/frontend/data-reports.md"],
+      "forbid": ["references/impeccable/SOURCE_SKILL.md", "references/apple-design/SOURCE_SKILL.md", "references/impeccable/reference/craft-floor.md"]
+    },
+    {
+      "id": "single-api",
+      "prompt": "Connect the orders screen to the REST API with typed errors and retry on timeouts.",
+      "caps": ["api"], "mode": "implement",
+      "must": ["references/frontend/api-integration.md"],
+      "forbid": ["references/frontend/admin-crud.md", "references/frontend/testing.md"]
+    },
+    {
+      "id": "single-testing",
+      "prompt": "Write Playwright end-to-end tests for the login flow.",
+      "caps": ["testing"], "mode": "implement",
+      "must": ["references/frontend/testing.md"],
+      "forbid": ["references/frontend/review-and-release.md", "references/impeccable/reference/craft-floor.md"]
+    },
+    {
+      "id": "unrelated-backend",
+      "prompt": "Optimize this SQL query and add a database index for the reports table.",
+      "caps": [], "mode": "implement", "outcome": ["skip"],
+      "must": [], "forbid": ["references/frontend/data-reports.md", "references/impeccable/reference/optimize.md"]
+    },
+    {
+      "id": "ambiguous-better",
+      "prompt": "Make this dashboard better.",
+      "caps": [], "mode": "implement", "outcome": ["clarify"],
+      "must": [], "forbid": ["references/impeccable/reference/operate.md", "references/impeccable/reference/critique.md"]
+    },
+    {
+      "id": "discovery-guide",
+      "prompt": "What can this skill do?",
+      "caps": [], "mode": "answer", "outcome": ["guide"],
+      "must": ["GUIDE.md"], "forbid": ["references/impeccable/SOURCE_SKILL.md"]
+    },
+    {
+      "id": "multi-new-landing-animate",
+      "prompt": "Build a new landing page for our launch with a bold new visual identity and a subtle entrance animation.",
+      "caps": ["design-new", "animate"], "mode": "implement",
+      "must": ["references/impeccable/SOURCE_SKILL.md", "references/impeccable/reference/new-work.md", "references/impeccable/reference/animate.md", "references/impeccable/reference/craft-floor.md"],
+      "forbid": ["references/apple-design/SOURCE_SKILL.md", "references/impeccable/reference/visualize.md"]
+    },
+    {
+      "id": "single-packages",
+      "prompt": "Move our shared button and modal into a publishable npm package with theming.",
+      "caps": ["packages"], "mode": "implement",
+      "must": ["references/frontend/packages-and-components.md"],
+      "forbid": ["references/impeccable/reference/extract.md", "references/frontend/microfrontends.md"]
+    },
+    {
+      "id": "ado-dry-run",
+      "prompt": "Here is Azure Boards work item 4521, tell me what it needs. Dry run only.",
+      "caps": ["ado"], "mode": "audit",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md", "templates/ado-delivery-report.md"],
+      "forbid": ["references/frontend/testing.md", "references/frontend/review-and-release.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "ado-bare-url",
+      "prompt": "https://dev.azure.com/contoso/web/_workitems/edit/4521",
+      "caps": ["ado"], "mode": "audit",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md"],
+      "forbid": ["templates/pr-description.md", "references/frontend/testing.md"]
+    },
+    {
+      "id": "ado-implement-local",
+      "prompt": "Implement ADO work item 4521 on a local branch, but don't push or open a PR.",
+      "caps": ["ado"], "mode": "implement",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/frontend/testing.md", "references/frontend/review-and-release.md"],
+      "forbid": ["templates/pr-description.md"]
+    },
+    {
+      "id": "ado-deliver-authorized",
+      "prompt": "Deliver Azure DevOps work item 4521 end to end and open a draft PR. You are authorized to push the task branch.",
+      "caps": ["ado"], "mode": "deliver",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md", "references/frontend/testing.md", "references/frontend/review-and-release.md", "templates/pr-description.md", "templates/ado-delivery-report.md"],
+      "forbid": ["references/impeccable/SOURCE_SKILL.md", "references/apple-design/SOURCE_SKILL.md"]
+    },
+    {
+      "id": "non-ado-ticket",
+      "prompt": "Deliver the Jira ticket PROJ-12.",
+      "caps": [], "mode": "deliver", "outcome": ["clarify", "skip"],
+      "must": [], "forbid": []
+    },
+    {
+      "id": "review-pr",
+      "prompt": "Do a code review of this branch for release readiness and draft the PR description. Read-only.",
+      "caps": ["review"], "mode": "audit",
+      "must": ["references/frontend/review-and-release.md", "templates/pr-description.md"],
+      "forbid": ["references/frontend/testing.md", "references/impeccable/reference/audit.md"]
+    },
+    {
+      "id": "single-microfrontends",
+      "prompt": "Set up a microfrontend remote for the billing module with Module Federation.",
+      "caps": ["microfrontends"], "mode": "implement",
+      "must": ["references/frontend/microfrontends.md"],
+      "forbid": ["references/frontend/packages-and-components.md"]
+    },
+    {
+      "id": "multi-page-state-responsive",
+      "prompt": "Add a new settings page with its own route, keep the form state in the URL, and make it work across mobile breakpoints.",
+      "caps": ["pages", "state", "responsive"], "mode": "implement",
+      "must": ["references/frontend/pages-and-routing.md", "references/frontend/state-management.md", "references/impeccable/reference/adapt.md", "references/impeccable/reference/craft-floor.md"],
+      "forbid": ["references/impeccable/reference/adapt.native.md", "references/apple-design/SOURCE_SKILL.md"]
+    },
+    {
+      "id": "plan-onboarding",
+      "prompt": "Plan the UX for a new onboarding flow before we build it.",
+      "caps": ["ux-shape", "onboarding"], "mode": "plan",
+      "must": ["references/impeccable/reference/shape.md", "references/impeccable/reference/onboard.md"],
+      "forbid": ["references/impeccable/reference/craft-floor.md", "references/impeccable/reference/new-work.md"]
+    },
+    {
+      "id": "native-audit-ios",
+      "prompt": "Review our iOS SwiftUI settings screen for accessibility. Read-only.",
+      "caps": ["design-audit", "ios"], "mode": "audit",
+      "must": ["references/impeccable/reference/audit.md", "references/impeccable/reference/audit.native.md", "references/impeccable/reference/ios.md"],
+      "forbid": ["references/impeccable/reference/android.md", "references/impeccable/reference/craft-floor.md"]
+    }
+  ]
+}

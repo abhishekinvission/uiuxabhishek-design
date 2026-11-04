@@ -22,7 +22,18 @@ Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/a
 | **Azure DevOps delivery** | Azure Boards work item → live ticket read → PR reconciliation → clarification and dependency gates → safe Git preflight → implementation → ordered verification → authorized **draft** PR → structured report |
 | **Quality gates** | Accessibility, keyboard and focus behavior, contrast, performance, responsive verification and the project's real test/lint/build checks |
 
-The skill routes each task to the relevant guidance and loads it on demand, so agents only read what the task needs. It doesn't impose a single visual style, framework, library or test runner. Your product's existing design system, repository conventions, accessibility requirements and explicit scope take priority.
+### How it routes
+
+`SKILL.md` is a lightweight, agent-neutral router. For each request it:
+
+1. checks that the task is frontend/UI work (backend-only work loads nothing);
+2. picks a **mode** (`answer`, `audit`, `plan`, `implement` or `deliver`) that caps what the agent may change;
+3. matches **capabilities** and loads only their files, in phases when several apply, with one owner per responsibility;
+4. follows the project's real stack and conventions over reference examples.
+
+Design tasks go straight to the matching Impeccable playbook instead of its full entry point. Playbooks that need upstream tooling are never loaded. Routing relies only on plain Markdown, with no hooks, subagents, MCP servers or vendor-specific tools.
+
+It doesn't impose a single visual style, framework, library or test runner. Your product's existing design system, repository conventions, accessibility requirements and explicit scope take priority.
 
 **Azure DevOps delivery** is opt-in. It runs only for Azure Boards work, needs an approved, authenticated Azure DevOps connector or `az` CLI that your agent can already use, and never guesses the organization, project, repository or target branch. Without write authorization it stays in audit/dry-run mode. It never merges, deploys or edits ticket state on its own.
 
@@ -61,7 +72,7 @@ npx skills add abhishekinvission/uiuxabhishek-design --list
 
 ## Usage
 
-Once it's installed, agents pick the skill up automatically for frontend design and interaction work. You can also name it directly:
+Once it's installed, agents pick the skill up automatically for frontend design and engineering work. Ask *"What can uiuxabhishek-design do?"* to get the built-in capability guide ([`GUIDE.md`](skills/uiuxabhishek-design/GUIDE.md)). You can also name the skill directly:
 
 - *"Use uiuxabhishek-design to audit this UI for hierarchy, typography, responsive spacing and press feedback. Read-only: report findings without editing."*
 - *"Use uiuxabhishek-design to redesign this settings page so it's calmer and easier to scan."*
@@ -75,7 +86,8 @@ The skill respects your scope. Read-only audits never edit files, and code sampl
 
 ```text
 skills/uiuxabhishek-design/
-├── SKILL.md            # Single entry point: routing, precedence and procedure
+├── SKILL.md            # Single entry point: intent, mode and capability router
+├── GUIDE.md            # User-facing capability and usage guide
 ├── NOTICE.md           # In-skill attribution (travels with installs)
 ├── LICENSES/           # In-skill copies of required licenses and notices
 ├── templates/          # PR description and ADO delivery report templates
@@ -89,6 +101,7 @@ NOTICE.md               # Ownership, attribution and redistribution notice
 SOURCES.md              # Provenance and SHA-256 checksums of bundled third-party files
 LICENSES/               # Third-party licenses and notices
 CLAUDE.md               # Maintainer policy for integrating new sources
+tests/                  # Repository validation and routing scenarios (not installed)
 ```
 
 This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks, scripts or credentials (including Azure DevOps credentials or connectors). Advanced Impeccable tooling, for example, needs a separate installation of the original project.
@@ -96,6 +109,7 @@ This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks, scri
 ## Maintenance
 
 - **Updating installed copies:** run the install command again, or `npx skills update` if your Skills CLI version supports it. Publishing to GitHub doesn't update copies already installed on other machines or agent instances.
+- **Validating:** run `python3 tests/validate.py --cli`. It uses the Python standard library only, plus the Skills CLI for the discovery check. It covers single-skill discovery, links, checksums, license mirrors, routing coverage, the scenarios in [`tests/routing_scenarios.json`](tests/routing_scenarios.json), context budget and a secret scan.
 - **Adding a source:** give the maintainer's Claude Code session a GitHub skill URL, a `SKILL.md`, a skill directory or an archive. [`CLAUDE.md`](CLAUDE.md) defines the integration policy: usefulness, security and license audits, deduplication, routing and documentation updates, validation, and publishing only when every check passes.
 - **Provenance:** every bundled third-party file is listed with its checksum in [`SOURCES.md`](SOURCES.md).
 
