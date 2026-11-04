@@ -351,7 +351,7 @@ def baseline_tokens(old_skill_chars, files, selected):
 def check_scenarios(modes, caps, never, craft_floor, groups, text):
     data = json.loads(read(os.path.join(ROOT, "tests", "routing_scenarios.json")))
     try:
-        old = subprocess.run(["git", "show", f"{BASELINE_COMMIT}:skills/uiuxabhishek-devkit/SKILL.md"],
+        old = subprocess.run(["git", "show", f"{BASELINE_COMMIT}:skills/{OLD_ID}/SKILL.md"],
                              cwd=ROOT, capture_output=True, text=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
         old = None
