@@ -181,7 +181,7 @@ After `setup`, run the installed copy, for example `node ~/.uiuxabhishek-devkit/
 | `Unknown agent`, or a flag is rejected | Check `npx skills add --help`. Use the identifiers exactly as listed above. |
 | Installed, but the agent doesn't use it | Restart the agent or open a new session. Run `npx skills list -g` to check it's installed. Name it in your prompt: *"Use uiuxabhishek-devkit to…"* |
 | Both `uiuxabhishek-design` and `uiuxabhishek-devkit` appear | Remove the old one: `npx skills remove uiuxabhishek-design -g -y`, then restart. |
-| `npx skills update` reports the old skill is missing | The skill was renamed in 2.0.0. [Migrate](#migrate-from-uiuxabhishek-design) instead of updating. |
+| `npx skills update` warns that `uiuxabhishek-design` "appears to have been deleted upstream" | The skill was renamed in 2.0.0. The CLI keeps your old copy, so nothing breaks, but it stays on the old version. [Migrate](#migrate-from-uiuxabhishek-design) instead of updating. |
 | Installed into the wrong project | Project installs (without `-g`) only apply to the folder you ran them in. Reinstall with `-g` or from the right project. |
 | The skill appears twice | It's installed both globally and in the project, or both by the CLI and through your Claude account. Remove one copy. |
 | Claude upload rejected | Upload the release ZIP unchanged. Re-zipping the folder contents loose, or using the repository's own `SKILL.md`, whose description is longer than 200 characters, fails. Check that code execution is on and that your organization allows skills. |
