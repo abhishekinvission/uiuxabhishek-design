@@ -1,5 +1,5 @@
 {
-  "_comment": "Routing scenarios for skills/uiuxabhishek-design/SKILL.md. Paths are relative to the skill root. 'forbid' lists files that must not be loaded; validate.py also forbids tool-dependent playbooks and ADO files everywhere unless 'ado' is expected.",
+  "_comment": "Routing scenarios for skills/uiuxabhishek-devkit/SKILL.md. Paths are relative to the skill root. 'forbid' lists files that must not be loaded; validate.py also forbids tool-dependent playbooks and ADO files everywhere unless 'ado' is expected.",
   "scenarios": [
     {
       "id": "single-typography",

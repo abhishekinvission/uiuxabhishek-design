@@ -1,4 +1,4 @@
-"""Repository validation for the uiuxabhishek-design skill.
+"""Repository validation for the uiuxabhishek-devkit skill.
 
 Standard library only. Run from anywhere:  python3 tests/validate.py [--cli]
 
@@ -6,8 +6,11 @@ Checks: single-skill discovery and frontmatter, Markdown links, SOURCES.md
 checksums and inventory, license/notice mirrors, router parsing and
 reference coverage, routing scenarios, context budget, a basic
 secret/executable scan, README install commands, the Claude upload ZIP
-(built to a temporary folder) and the Git workflow commands against
-throwaway repositories with a mock remote (tests/git_sandbox.py). --cli also runs `npx skills add . --list` and
+(built to a temporary folder), the Git workflow commands against throwaway
+repositories with a mock remote (tests/git_sandbox.py), the optional updater
+against a mock GitHub API and mock Skills CLI (tests/updater_sandbox.py), and
+leftover references to the pre-2.0 skill ID. --cli also migrates an isolated
+HOME from the old skill ID and installs, updates and removes per agent. --cli also runs `npx skills add . --list` and
 a real global install for every documented agent into a throwaway HOME.
 
 Routing scenarios use a deterministic keyword simulation of SKILL.md's
@@ -25,11 +28,15 @@ import tempfile
 import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKILL = os.path.join(ROOT, "skills", "uiuxabhishek-design")
+SKILL = os.path.join(ROOT, "skills", "uiuxabhishek-devkit")
 THIRD_PARTY = ("references/impeccable/", "references/apple-design/")
 BASELINE_COMMIT = "036b394"  # last commit before the router rewrite
 FRONTMATTER_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
-REPO = "abhishekinvission/uiuxabhishek-design"
+REPO = "abhishekinvission/uiuxabhishek-devkit"
+OLD_ID = "uiuxabhishek-design"  # skill ID before v2.0.0
+OLD_ID_COMMIT = "82f5367"  # last commit that shipped the old ID
+OLD_ID_ALLOWED = ("CHANGELOG.md", "README.md", "INSTALL.md", "NOTICE.md", "SOURCES.md", "CLAUDE.md",
+                  "skills/uiuxabhishek-devkit/NOTICE.md", "tests/", "tools/updater/")
 AGENTS = ("claude-code", "codex", "gemini-cli", "github-copilot", "antigravity")
 UPLOAD_MAX_BYTES = 8 * 1024 * 1024  # Claude API skill upload limit
 SKILL_MD_MAX_CHARS = 12000
@@ -65,7 +72,7 @@ def md_files(base=ROOT):
 # ---------------------------------------------------------------- discovery
 def check_discovery():
     found = [p for p in md_files() if os.path.basename(p).lower() == "skill.md"]
-    check([rel(p, ROOT) for p in found] == ["skills/uiuxabhishek-design/SKILL.md"],
+    check([rel(p, ROOT) for p in found] == ["skills/uiuxabhishek-devkit/SKILL.md"],
           f"expected exactly one SKILL.md, found {[rel(p, ROOT) for p in found]}")
     text = read(os.path.join(SKILL, "SKILL.md"))
     m = re.match(r"---\n(.*?)\n---\n", text, re.S)
@@ -73,7 +80,7 @@ def check_discovery():
         return
     top = dict(re.findall(r"^([a-z-]+):\s*(.*)$", m.group(1), re.M))
     check(set(top) <= FRONTMATTER_KEYS, f"unexpected frontmatter keys {set(top) - FRONTMATTER_KEYS}")
-    check(top.get("name") == "uiuxabhishek-design", "frontmatter name must be uiuxabhishek-design")
+    check(top.get("name") == "uiuxabhishek-devkit", "frontmatter name must be uiuxabhishek-devkit")
     desc = top.get("description", "")
     check(0 < len(desc) <= 1024, f"description length {len(desc)} not in 1..1024")
     for k in ("name", "description"):
@@ -89,13 +96,13 @@ def check_cli():
         check(False, f"skills CLI unavailable: {e}")
         return
     names = re.findall(r"^│ {4}([a-z0-9-]+)\s*$", out, re.M)
-    check(names == ["uiuxabhishek-design"], f"skills CLI discovered {names}")
+    check(names == ["uiuxabhishek-devkit"], f"skills CLI discovered {names}")
     print(f"skills CLI: {names}")
     with tempfile.TemporaryDirectory() as home:
         env = dict(os.environ, HOME=home, DISABLE_TELEMETRY="1", DO_NOT_TRACK="1")
         env.pop("CLAUDE_CONFIG_DIR", None)
         env.pop("CODEX_HOME", None)
-        cmd = ["npx", "--yes", "skills", "add", ROOT, "--skill", "uiuxabhishek-design", "-g", "-y"]
+        cmd = ["npx", "--yes", "skills", "add", ROOT, "--skill", "uiuxabhishek-devkit", "-g", "-y"]
         for a in AGENTS:
             cmd += ["-a", a]
         try:
@@ -104,9 +111,56 @@ def check_cli():
             check(False, f"skills CLI install failed: {e}")
             return
         installed = [rel(os.path.join(r, "SKILL.md"), home) for r, _, fs in os.walk(home, followlinks=True)
-                     if "SKILL.md" in fs and os.path.basename(r) == "uiuxabhishek-design"]
+                     if "SKILL.md" in fs and os.path.basename(r) == "uiuxabhishek-devkit"]
         check(run.returncode == 0 and installed, f"global install for {AGENTS} failed: {run.stderr[-300:]}")
         print(f"skills CLI: global install for {len(AGENTS)} agents -> {sorted(installed)}")
+    check_migration()
+
+
+def skill_paths(home, name):
+    return sorted(rel(os.path.join(r, "SKILL.md"), home) for r, _, fs in os.walk(home, followlinks=True)
+                  if "SKILL.md" in fs and os.path.basename(r) == name and "/.npm/" not in r)
+
+
+def check_migration():
+    """Old-ID install -> documented migration -> update -> per-agent install/remove, in a throwaway HOME."""
+    with tempfile.TemporaryDirectory() as tmp:
+        home, old = os.path.join(tmp, "home"), os.path.join(tmp, "old-source")
+        os.makedirs(home)
+        os.makedirs(old)
+        archive = subprocess.run(["git", "archive", OLD_ID_COMMIT], cwd=ROOT, capture_output=True, check=True).stdout
+        subprocess.run(["tar", "-x", "-C", old], input=archive, check=True)
+        env = dict(os.environ, HOME=home, DISABLE_TELEMETRY="1", DO_NOT_TRACK="1")
+        env.pop("CLAUDE_CONFIG_DIR", None)
+        env.pop("CODEX_HOME", None)
+        agents = [x for a in AGENTS for x in ("-a", a)]
+
+        def cli(*args):
+            r = subprocess.run(["npx", "--yes", "skills", *args], cwd=home, env=env,
+                               capture_output=True, text=True, timeout=300)
+            return r.returncode
+        other = os.path.join(home, ".agents", "skills", "other-skill", "SKILL.md")
+        os.makedirs(os.path.dirname(other))
+        with open(other, "w") as f:
+            f.write("---\nname: other-skill\ndescription: unrelated\n---\n")
+        ok = cli("add", old, "--skill", OLD_ID, "-g", *agents, "-y") == 0 and skill_paths(home, OLD_ID)
+        check(ok, "migration: could not install the old skill ID in the sandbox")
+        ok = cli("remove", OLD_ID, "-g", "-y") == 0 and cli("add", ROOT, "--skill", "uiuxabhishek-devkit", "-g", *agents, "-y") == 0
+        new = skill_paths(home, "uiuxabhishek-devkit")
+        check(ok and not skill_paths(home, OLD_ID) and len(new) == 2 and os.path.exists(other),
+              f"migration: old {skill_paths(home, OLD_ID)}, new {new}")
+        check(cli("update", "uiuxabhishek-devkit", "-g", "-y") == 0, "migration: update failed")
+        check(cli("remove", "uiuxabhishek-devkit", "-g", "-y") == 0 and not skill_paths(home, "uiuxabhishek-devkit"),
+              "migration: remove failed")
+        per_agent = []
+        for a in AGENTS:
+            added = cli("add", ROOT, "--skill", "uiuxabhishek-devkit", "-g", "-a", a, "-y") == 0 and skill_paths(home, "uiuxabhishek-devkit")
+            removed = cli("remove", "uiuxabhishek-devkit", "-g", "-a", a, "-y") == 0
+            per_agent.append(bool(added and removed))
+        check(all(per_agent) and not skill_paths(home, "uiuxabhishek-devkit") and os.path.exists(other),
+              f"per-agent install/remove failed: {dict(zip(AGENTS, per_agent))}")
+        print(f"skills CLI: migration {OLD_ID} -> uiuxabhishek-devkit, update, remove and "
+              f"{sum(per_agent)}/{len(AGENTS)} per-agent install/remove in a throwaway HOME")
 
 
 # -------------------------------------------------------------------- links
@@ -297,7 +351,7 @@ def baseline_tokens(old_skill_chars, files, selected):
 def check_scenarios(modes, caps, never, craft_floor, groups, text):
     data = json.loads(read(os.path.join(ROOT, "tests", "routing_scenarios.json")))
     try:
-        old = subprocess.run(["git", "show", f"{BASELINE_COMMIT}:skills/uiuxabhishek-design/SKILL.md"],
+        old = subprocess.run(["git", "show", f"{BASELINE_COMMIT}:skills/uiuxabhishek-devkit/SKILL.md"],
                              cwd=ROOT, capture_output=True, text=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
         old = None
@@ -347,15 +401,52 @@ def check_budget(text):
 # ------------------------------------------------------------------ install
 def check_install_docs():
     readme = read(os.path.join(ROOT, "README.md"))
-    base = f"npx skills add {REPO} --skill uiuxabhishek-design -g"
+    base = f"npx skills add {REPO} --skill uiuxabhishek-devkit -g"
     allc = base + "".join(f" -a {a}" for a in AGENTS) + " -y"
     check(allc in readme, "README lacks the all-agent global install command")
     for a in AGENTS:
         check(f"{base} -a {a} -y" in readme, f"README lacks the global install command for {a}")
-    for cmd in re.findall(r"npx skills add (\S+)", readme):
-        check(cmd == REPO, f"README install command uses {cmd!r}")
-    check("## Install UIUX Abhishek Design" in readme[:4000], "install section is not near the top of README")
-    print(f"install docs: all-agent and {len(AGENTS)} per-agent commands present")
+    check("## Install UIUX Abhishek DevKit" in readme[:5000], "install section is not near the top of README")
+    install = read(os.path.join(ROOT, "INSTALL.md"))
+    for doc, text in (("README.md", readme), ("INSTALL.md", install)):
+        check(f"npx skills remove {OLD_ID} -g -y" in text, f"{doc} lacks the old-skill removal command")
+        for cmd in re.findall(r"npx skills add ([^-\s]\S*)", text):
+            check(cmd.split("#")[0] == REPO, f"{doc} install command uses {cmd!r}")
+    print(f"install docs: all-agent, {len(AGENTS)} per-agent and migration commands present")
+
+
+def check_old_id():
+    hits = []
+    for r, dirs, fs in os.walk(ROOT):
+        dirs[:] = [d for d in dirs if d not in (".git", "node_modules", "dist")]
+        for f in fs:
+            p = rel(os.path.join(r, f), ROOT)
+            if p.startswith(OLD_ID_ALLOWED) or not f.endswith((".md", ".py", ".json", ".mjs", ".txt")):
+                continue
+            if OLD_ID in read(os.path.join(r, f)) or "UIUX Abhishek Design" in read(os.path.join(r, f)):
+                hits.append(p)
+    check(not hits, f"pre-2.0 skill ID or brand left in {hits}")
+    for doc in ("README.md", "INSTALL.md"):
+        text = read(os.path.join(ROOT, doc))
+        check(f"--skill {OLD_ID}" not in text, f"{doc} still installs the old skill ID")
+        check(f"{REPO.split('/')[0]}/{OLD_ID}" not in text.replace(f"{REPO.split('/')[0]}/{OLD_ID}#", ""),
+              f"{doc} still points to the old repository")
+    print(f"old ID: no {OLD_ID} references outside migration notes and history")
+
+
+def check_updater():
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    sys.dont_write_bytecode = True
+    import updater_sandbox
+    try:
+        results = updater_sandbox.run_checks()
+    except (OSError, AssertionError, subprocess.SubprocessError) as e:
+        check(False, f"updater sandbox error: {e}")
+        return
+    for name, ok in results:
+        check(ok, f"updater sandbox: {name}")
+    check(not os.path.exists(os.path.join(SKILL, "tools")), "updater must stay outside the installable skill")
+    print(f"updater sandbox: {sum(ok for _, ok in results)}/{len(results)} checks with a mock API and mock CLI")
 
 
 def check_package():
@@ -369,20 +460,20 @@ def check_package():
         with zipfile.ZipFile(path) as z:
             infos = z.infolist()
             names = [i.filename for i in infos]
-            check(all(n.startswith("uiuxabhishek-design/") for n in names), "ZIP root must be uiuxabhishek-design/")
+            check(all(n.startswith("uiuxabhishek-devkit/") for n in names), "ZIP root must be uiuxabhishek-devkit/")
             check(all((i.external_attr >> 16) & 0o777 == 0o644 for i in infos), "ZIP entries must be 0644 files")
-            expected = {f"uiuxabhishek-design/{r}" for _, r in pkg.files()}
+            expected = {f"uiuxabhishek-devkit/{r}" for _, r in pkg.files()}
             check(set(names) == expected, f"ZIP contents drift: {sorted(set(names) ^ expected)[:5]}")
             for req in ("SKILL.md", "GUIDE.md", "LICENSE", "NOTICE.md", "LICENSES/IMPECCABLE_NOTICE.md",
                         "references/impeccable/SOURCE_SKILL.md", "templates/pr-description.md"):
-                check(f"uiuxabhishek-design/{req}" in names, f"ZIP lacks {req}")
+                check(f"uiuxabhishek-devkit/{req}" in names, f"ZIP lacks {req}")
             for n in names:
                 data, src = z.read(n), os.path.join(SKILL, n.split("/", 1)[1])
                 if n.endswith("/SKILL.md"):
                     text, orig = data.decode("utf-8"), read(src)
                     m = re.search(r"^name: (.*)$", text, re.M)
                     d = re.search(r"^description: (.*)$", text, re.M)
-                    check(m and m.group(1) == "uiuxabhishek-design", "packaged SKILL.md name mismatch")
+                    check(m and m.group(1) == "uiuxabhishek-devkit", "packaged SKILL.md name mismatch")
                     check(d and 0 < len(d.group(1)) <= pkg.UPLOAD_DESCRIPTION_MAX, "packaged description > 200 chars")
                     check(d and not re.search(r":\s|\s#", d.group(1)), "packaged description needs YAML quoting")
                     strip = lambda t: re.sub(r"^description: .*$", "", t, count=1, flags=re.M)
@@ -420,7 +511,7 @@ def check_security():
             check(not os.path.islink(p), f"symlink {rel(p, ROOT)}")
             check(not os.access(p, os.X_OK), f"executable file {rel(p, ROOT)}")
             r = rel(p, SKILL)
-            if f.endswith((".md", ".json", ".py", ".txt")) and not r.startswith(THIRD_PARTY):
+            if f.endswith((".md", ".json", ".py", ".txt", ".mjs")) and not r.startswith(THIRD_PARTY):
                 check(not secret.search(read(p)), f"possible secret in {rel(p, ROOT)}")
     print("security: secret, symlink and executable scan done")
 
@@ -443,6 +534,8 @@ def main():
     check_install_docs()
     check_package()
     check_git_sandbox()
+    check_updater()
+    check_old_id()
     check_scenarios(modes, caps, never, craft_floor, groups, text)
     if failures:
         print(f"\nFAILED ({len(failures)}):")

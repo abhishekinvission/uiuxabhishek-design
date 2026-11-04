@@ -2,12 +2,14 @@
 
 Standard library only. Run from anywhere:  python3 tools/package_skill.py [out_dir]
 
-The ZIP has one root folder, uiuxabhishek-design/, containing the complete
+The ZIP has one root folder, uiuxabhishek-devkit/, containing the complete
 skill directory (SKILL.md, GUIDE.md, references/, templates/, LICENSE,
 NOTICE.md, LICENSES/). Claude's upload form limits the description to 200
 characters, so only the packaged SKILL.md swaps its description for
 UPLOAD_DESCRIPTION; every other byte is copied unchanged. Output is
-deterministic: sorted entries, fixed timestamps and permissions.
+deterministic: sorted entries, fixed timestamps and permissions. The optional
+updater (tools/updater/devkit-update.mjs) is copied beside it as a separate
+release asset with its own checksum; it is never part of the skill.
 """
 import hashlib
 import os
@@ -16,12 +18,13 @@ import sys
 import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKILL = os.path.join(ROOT, "skills", "uiuxabhishek-design")
-NAME = "uiuxabhishek-design"
-UPLOAD_DESCRIPTION = ("UI/UX design, frontend engineering and Git workflow router for visual craft, "
-                      "accessibility, motion, pages, APIs, tests, Git, PRs, releases and Azure DevOps "
-                      "delivery. Loads only what a task needs.")
+SKILL = os.path.join(ROOT, "skills", "uiuxabhishek-devkit")
+NAME = "uiuxabhishek-devkit"
+UPLOAD_DESCRIPTION = ("UIUX Abhishek DevKit router for UI/UX design, accessibility, motion, frontend "
+                      "pages, APIs, tests, Git, PRs, releases and Azure DevOps delivery. Loads only "
+                      "what a task needs.")
 UPLOAD_DESCRIPTION_MAX = 200
+UPDATER = os.path.join(ROOT, "tools", "updater", "devkit-update.mjs")
 SKIP = {".DS_Store", "Thumbs.db"}
 STAMP = (2026, 1, 1, 0, 0, 0)
 
@@ -70,9 +73,19 @@ def build(out_dir):
             z.writestr(info, data)
     with open(path, "rb") as f:
         digest = hashlib.sha256(f.read()).hexdigest()
+    write_checksum(path)
+    updater = os.path.join(out_dir, os.path.basename(UPDATER))
+    with open(UPDATER, "rb") as src, open(updater, "wb") as dst:
+        dst.write(src.read())
+    write_checksum(updater)
+    return path, digest
+
+
+def write_checksum(path):
+    with open(path, "rb") as f:
+        digest = hashlib.sha256(f.read()).hexdigest()
     with open(path + ".sha256", "w", encoding="utf-8") as f:
         f.write(f"{digest}  {os.path.basename(path)}\n")
-    return path, digest
 
 
 if __name__ == "__main__":

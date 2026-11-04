@@ -1,6 +1,6 @@
-# UIUX Abhishek Design: what you can ask for
+# UIUX Abhishek DevKit: what you can ask for
 
-**Visual Craft. Fluid Motion. Exceptional Experiences.**
+**Design. Build. Automate. Deliver.**
 
 Describe the task in plain language. The skill picks the right guidance and loads only that. Naming a capability is optional.
 
@@ -48,4 +48,5 @@ It never merges, deploys, force-pushes, deletes or moves branches and tags, rewr
 
 - It follows your existing framework, design system and conventions, and never imposes a style or library.
 - Upstream Impeccable tooling (live mode, detector hooks, `doctor`, image generation, `init`) isn't bundled. Install the original Impeccable project if you need it.
+- Keep it current: `npx skills update uiuxabhishek-devkit -g -y`. Optional update notifications and Claude Chat uploads are covered in the repository's INSTALL.md (github.com/abhishekinvission/uiuxabhishek-devkit).
 - Credits and licenses: [NOTICE.md](NOTICE.md).

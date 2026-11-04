@@ -21,11 +21,11 @@ The initial import came from locally installed copies of Impeccable and Apple De
 | `LICENSES/PLATFORM_DESIGN_SKILLS_MIT.txt` | platform-design-skills `LICENSE` (`main`) | 2026-11-03 |
 | `LICENSES/APPLE_DESIGN_MIT.txt` | emilkowalski/skills license | Initial import |
 
-The same files are mirrored in `skills/uiuxabhishek-design/LICENSES/` so they travel with installed copies.
+The same files are mirrored in `skills/uiuxabhishek-devkit/LICENSES/` so they travel with installed copies.
 
 ## Included third-party files (SHA-256)
 
-Paths are relative to `skills/uiuxabhishek-design/references/`.
+Paths are relative to `skills/uiuxabhishek-devkit/references/`.
 
 - `apple-design/SOURCE_SKILL.md  77bb63b7043bb93aca2ff4ab040c249484eef35682bb6ff7163433c31d30adc7`
 - `impeccable/SOURCE_SKILL.md  246464ef6b115235791f5683922092f5d5e0ce95d6f6a94ed140d2eb0f8c4f82`
@@ -84,7 +84,7 @@ The pack describes itself as framework-independent guides written for this proje
 - 2026-11-04: moved the generic Git preflight, staging, commit and push steps of `azure-devops-delivery.md` into the shared `git-workflow.md`, which ADO now links to; the Azure-specific ticket, PR and comment steps are unchanged.
 - Not imported: the pack's `PACKAGE_MANIFEST.json`, `README.md` and `integration/` instructions (installer metadata, merged into `SKILL.md` routing instead).
 
-Checksums (paths relative to `skills/uiuxabhishek-design/`):
+Checksums (paths relative to `skills/uiuxabhishek-devkit/`):
 
 - `references/frontend/admin-crud.md  0c38253c65ef8ce7f063fd33d4eddb8fb0c406d5e3c0cbebdea789a92c02dcba`
 - `references/frontend/api-integration.md  8bdb1e2638d441b13e674d889809d4111ac5d1369eb52f6b02777f7545c9f407`

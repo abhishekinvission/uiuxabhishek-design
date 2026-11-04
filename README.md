@@ -1,137 +1,143 @@
-# UIUX Abhishek Design
+# UIUX Abhishek DevKit
 
-> **Visual Craft. Fluid Motion. Exceptional Experiences.**
+> **Design. Build. Automate. Deliver.**
 
-UIUX Abhishek Design is a single, installable Agent Skill (`uiuxabhishek-design`) that gives AI coding agents senior-level UI/UX and frontend engineering judgment. It covers visual hierarchy, layout and typography, gesture physics, spring motion and accessible interaction, framework-neutral frontend delivery, safe Git and repository workflows on any provider, and Azure DevOps ticket-to-draft-PR workflows.
+UIUX Abhishek DevKit is one installable Agent Skill, `uiuxabhishek-devkit`, that gives AI coding agents senior-level judgment for UI/UX design, motion, frontend engineering, Git and repository workflows, and Azure DevOps delivery. It works with Claude Code, Codex, Gemini CLI, GitHub Copilot and Antigravity. For each task it loads only the guidance that task needs.
 
 Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/abhishekinvission))**.
 
-- **Repository:** [abhishekinvission/uiuxabhishek-design](https://github.com/abhishekinvission/uiuxabhishek-design)
-- **Skill ID:** `uiuxabhishek-design`
-- **Entry point:** [`skills/uiuxabhishek-design/SKILL.md`](skills/uiuxabhishek-design/SKILL.md)
+- **Repository:** [abhishekinvission/uiuxabhishek-devkit](https://github.com/abhishekinvission/uiuxabhishek-devkit)
+- **Skill ID:** `uiuxabhishek-devkit` (formerly `uiuxabhishek-design`; see [upgrading](#upgrading-from-uiuxabhishek-design))
+- **Current version:** 2.0.0 ([changelog](CHANGELOG.md))
 
-## Install UIUX Abhishek Design
+## Install UIUX Abhishek DevKit
 
-**One command installs the skill globally for Claude Code, Codex, Gemini CLI, GitHub Copilot and Antigravity:**
+**One command installs it globally for all five supported agents:**
 
 ```bash
-npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a claude-code -a codex -a gemini-cli -a github-copilot -a antigravity -y
+npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a claude-code -a codex -a gemini-cli -a github-copilot -a antigravity -y
 ```
 
-It needs Node.js 22.20+ and Git, and uses the official [Skills CLI](https://github.com/vercel-labs/skills). After installing, restart your agent and ask *"What can uiuxabhishek-design do?"* to check it's loaded.
+It needs Node.js 22.20+ and Git, and uses the official [Skills CLI](https://github.com/vercel-labs/skills). Restart your agent afterwards, then ask *"What can uiuxabhishek-devkit do?"* to check it's loaded.
 
 Or install for a single agent:
 
 | Agent | Global install |
 | --- | --- |
-| Claude Code (terminal, IDE, Claude Desktop Code tab) | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a claude-code -y` |
-| OpenAI Codex | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a codex -y` |
-| Gemini CLI | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a gemini-cli -y` |
-| GitHub Copilot | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a github-copilot -y` |
-| Google Antigravity | `npx skills add abhishekinvission/uiuxabhishek-design --skill uiuxabhishek-design -g -a antigravity -y` |
+| Claude Code (terminal, IDE, Claude Desktop Code tab) | `npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a claude-code -y` |
+| OpenAI Codex | `npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a codex -y` |
+| Gemini CLI | `npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a gemini-cli -y` |
+| GitHub Copilot | `npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a github-copilot -y` |
+| Google Antigravity | `npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a antigravity -y` |
 
-**Claude.ai and Claude Desktop Chat** run in your Claude account, not on your computer, so a terminal install doesn't enable the skill there. Download `uiuxabhishek-design-v<version>.zip` from the [latest release](https://github.com/abhishekinvission/uiuxabhishek-design/releases/latest), then upload it under **Customize → Skills → + → Create skill → Upload a skill**.
+**Local agents vs. Claude Chat.** The commands above install files on your computer for local coding agents. **Claude.ai and Claude Desktop Chat** use skills stored in your Claude account instead, so a terminal install doesn't enable the skill there. For Chat, download `uiuxabhishek-devkit-v<version>.zip` from the [latest release](https://github.com/abhishekinvission/uiuxabhishek-devkit/releases/latest) and upload it under **Customize → Skills → + → Create skill → Upload a skill**.
 
-**[INSTALL.md](INSTALL.md)** covers requirements, project installs, verification, updates, removal, reloading, Claude Chat upload details and troubleshooting.
+The bundled capabilities belong to this one skill. Install only `uiuxabhishek-devkit`. **[INSTALL.md](INSTALL.md)** covers requirements, project installs, verification, updates, removal, reloading, migration, Chat uploads and troubleshooting.
 
-The bundled capabilities belong to this one skill. Install only `uiuxabhishek-design`.
+### Upgrading from `uiuxabhishek-design`
 
-## What it does
+Version 2.0.0 renamed the skill, so remove the old one and install the new one:
+
+```bash
+npx skills remove uiuxabhishek-design -g -y
+npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit -g -a claude-code -a codex -a gemini-cli -a github-copilot -a antigravity -y
+```
+
+Then restart your agents. In Claude Chat, delete the old skill and upload the 2.0.0 ZIP. See [INSTALL.md](INSTALL.md#migrate-from-uiuxabhishek-design) for details.
+
+## What's included
 
 | Area | Capabilities |
 | --- | --- |
 | **Visual craft** | Design direction, visual hierarchy, layout, spacing, typography, color, theming, design tokens and design-system consistency |
-| **UX review** | Critiques, audits, information architecture, cognitive load, UX copy, empty/error states, onboarding, i18n and edge cases |
-| **Fluid motion** | Direct manipulation, press feedback, interruptible transitions, velocity-aware springs, drag/flick, sheets and drawers, reduced motion |
-| **Platforms** | Responsive web, plus iOS and Android platform conventions where they apply |
-| **Frontend engineering** | Pages and routing, API integration, admin CRUD, data reports and exports, state management, testing, review and release readiness, shared packages and components, microfrontends |
-| **Git and repositories** | Status and diff, clone, fetch/pull, branches and sync, safe staging and commits, push, PR/MR creation and review, merges, conflict resolution, revert and recovery, tags, releases and fork/mirror sync on GitHub, GitLab, Azure Repos, Bitbucket or plain Git, for any language or framework |
-| **Azure DevOps delivery** | Azure Boards work item → live ticket read → PR reconciliation → clarification and dependency gates → safe Git preflight → implementation → ordered verification → authorized **draft** PR → structured report |
-| **Quality gates** | Accessibility, keyboard and focus behavior, contrast, performance, responsive verification and the project's real test/lint/build checks |
+| **UX review** | Critiques, audits, information architecture, UX copy, empty and error states, onboarding, i18n and edge cases |
+| **Accessibility and platforms** | WCAG audits, keyboard and focus behavior, contrast, responsive web, iOS and Android conventions |
+| **Fluid motion** | Purposeful animation, gestures, drag and flick, interruptible spring motion, sheets and drawers, reduced motion |
+| **Frontend engineering** | Pages and routing, API integration, admin CRUD, data reports and exports, state management, testing, code review and release readiness, shared packages and components, microfrontends |
+| **Git and repositories** | Status and diff, clone, fetch/pull, branches and sync, safe commits, push, PR/MR creation and review, merges, conflicts, revert and recovery, tags and releases on GitHub, GitLab, Azure Repos, Bitbucket or plain Git |
+| **Azure DevOps delivery** | Azure Boards work item → live ticket read → PR reconciliation → clarification and dependency gates → safe Git preflight → implementation → ordered verification → authorized **draft** PR → structured report, for frontend, backend, full-stack or infrastructure work |
 
-### How it routes
+### How it picks what to load
 
-`SKILL.md` is a lightweight, agent-neutral router. For each request it:
+`SKILL.md` is a short, agent-neutral router. For each request it:
 
-1. checks that the task is frontend/UI, Git or Azure DevOps work (other backend-only work loads nothing);
-2. picks a **mode** (`answer`, `audit`, `plan`, `implement` or `deliver`) that caps what the agent may change;
-3. matches **capabilities** and loads only their files, in phases when several apply, with one owner per responsibility;
-4. follows the project's real stack and conventions over reference examples.
+1. **checks scope:** UI and frontend guidance is for UI work, while Git and Azure DevOps workflows apply to any repository and stack. Other backend-only work loads nothing;
+2. **picks a mode** (`answer`, `audit`, `plan`, `implement` or `deliver`) that caps what the agent may change. "Read-only" or "dry run" means no edits; "don't push" means no publishing;
+3. **matches capabilities** and loads only their files, in phases when several apply, with one owner per responsibility;
+4. **follows your project:** its stack, design system, conventions and checks take priority over reference examples.
 
-Design tasks go straight to the matching Impeccable playbook instead of its full entry point. Playbooks that need upstream tooling are never loaded. Routing relies only on plain Markdown, with no hooks, subagents, MCP servers or vendor-specific tools.
+Merges, destructive resets, force-pushes, branch or tag deletion, published-history rewrites, releases, deployments and ticket writes always need your explicit approval for that exact operation. Owning the repository doesn't count as approval. Routing relies only on plain Markdown, with no hooks, subagents, MCP servers or vendor-specific tools.
 
-It doesn't impose a single visual style, framework, library or test runner. Your product's existing design system, repository conventions, accessibility requirements and explicit scope take priority.
+## Using it
 
-**Git workflows** run for any repository and stack. The skill detects the real state, remotes, provider, conventions and signed-in tools first. It preserves uncommitted work and does only the writes you name. Merges, destructive resets, force-pushes, branch or tag deletion, published-history rewrites and releases each need your explicit approval, and owning the repository doesn't count as approval.
+Describe the task in plain language. Naming the skill is optional, but you can start with *"Use uiuxabhishek-devkit to…"*. To see everything it can do, ask *"What can uiuxabhishek-devkit do?"*, which shows the built-in [capability guide](skills/uiuxabhishek-devkit/GUIDE.md).
 
-**Azure DevOps delivery** is opt-in. It runs only for Azure Boards work, needs an approved, authenticated Azure DevOps connector or `az` CLI that your agent can already use, and never guesses the organization, project, repository or target branch. Without write authorization it stays in audit/dry-run mode. It never merges, deploys or edits ticket state on its own.
+| Area | Example prompt |
+| --- | --- |
+| UI/UX | "Audit this checkout UI for accessibility and hierarchy. Read-only." |
+| Typography | "The pricing headings feel cramped; fix the typography." |
+| Motion | "Make this bottom sheet draggable with interruptible spring motion and reduced-motion support." |
+| Frontend | "Add a settings page with its own route and keep the form state in the URL." |
+| API | "Connect the orders screen to the REST API with typed errors and retry on timeouts." |
+| CRUD and reports | "Add an admin users table with server pagination, filters, CSV export and edit forms." |
+| Testing | "Write Playwright end-to-end tests for the login flow." |
+| Git | "My branch is behind main; sync it without losing my work." · "Commit only the login fix and push the branch." · "Open a draft merge request on GitLab." · "Resolve the merge conflicts after my rebase." |
+| Releases | "Plan a v2.1.0 tag and GitHub release." Plans only; publishing needs your go-ahead |
+| Azure DevOps | "Dry-run Azure Boards work item 12345." · "Implement item 12345 locally, don't push." · "Deliver item 12345 and open a draft PR; you're authorized to push the task branch." |
 
-## Usage
+**Azure DevOps** runs only for Azure DevOps/Azure Boards work. It needs an approved, signed-in Azure DevOps connector or the `az devops` CLI, and it never guesses the organization, project, repository or target branch. **Git** provider actions use `gh`, `glab` or `az` only when they're installed and signed in. Otherwise the agent does the local Git part and gives you the remaining manual steps.
 
-Describe the task. The skill picks the mode and the capabilities on its own, and loads only their guidance, so you don't need to name a capability. To invoke it explicitly, start with *"Use uiuxabhishek-design to…"*:
+## Updates and versions
 
-- *"Use uiuxabhishek-design to audit this checkout UI for accessibility and hierarchy. Read-only."* Loads only the audit playbook and edits nothing.
-- *"Use uiuxabhishek-design to fix the typography on the pricing page."* Loads typography plus the craft baseline, and edits files in scope.
-- *"Use uiuxabhishek-design to make this bottom sheet draggable with interruptible spring motion."* Loads the fluid-motion guide.
-- *"Use uiuxabhishek-design to add an admin users table with pagination, filters, edit forms and tests."* Combines CRUD, reports and testing in phases.
-- *"What can uiuxabhishek-design do?"* Shows the capability guide ([`GUIDE.md`](skills/uiuxabhishek-design/GUIDE.md)).
-
-**Git** works the same way for any project:
-
-- *"Use uiuxabhishek-design to show the git status and diff. Read-only."* Inspects only.
-- *"Commit only the files for the login fix and push the branch."* Stages explicit paths, checks the diff and pushes the task branch. It doesn't open a PR.
-- *"Open a draft merge request on GitLab for this branch."* Uses `glab` if it's signed in, or gives you manual steps.
-- *"Resolve the merge conflicts after my rebase."* Resolves from evidence and stops to ask about ambiguous hunks.
-- *"Plan a v2.1.0 tag and GitHub release."* Plans only. Publishing it needs your explicit go-ahead.
-
-**Azure DevOps** is a separate workflow that only starts for Azure DevOps/Azure Boards work, never for Jira, GitHub or Linear tickets:
-
-- *"Use uiuxabhishek-design to dry-run Azure Boards work item 12345."* Reads and plans only.
-- *"Implement Azure Boards item 12345 locally, don't push."* Changes files on a task branch.
-- *"Deliver Azure Boards item 12345 and open a draft PR. You're authorized to push the task branch."* Commits, pushes and opens a draft PR.
-
-Read-only requests never edit files. Commands in references or tickets are documentation, not permission to run them.
+- **Stable releases** are tagged `vX.Y.Z` on GitHub with a Claude upload ZIP and its SHA-256 checksum. See [CHANGELOG.md](CHANGELOG.md).
+- **Update a local install:** `npx skills update uiuxabhishek-devkit -g -y`. An install made with the commands above follows `main`, which only receives validated changes. To stay on stable releases only, install a tag (`abhishekinvission/uiuxabhishek-devkit#v2.0.0`) or use the optional updater.
+- **Update notifications (optional):** the [updater](INSTALL.md#optional-update-notifications-and-automatic-updates) checks GitHub once a day for a newer stable release and notifies you. It never changes anything unless you opt in with `enable-auto-update --yes`. It runs on macOS, Linux and Windows and touches only `uiuxabhishek-devkit`.
+- **Claude Chat uploads** are always updated by hand: delete the old skill and upload the new ZIP.
+- **Remove:** `npx skills remove uiuxabhishek-devkit -g -y`.
 
 ## Repository layout
 
 ```text
-skills/uiuxabhishek-design/
+skills/uiuxabhishek-devkit/
 ├── SKILL.md            # Single entry point: intent, mode and capability router
 ├── GUIDE.md            # User-facing capability and usage guide
-├── NOTICE.md           # In-skill attribution (travels with installs)
-├── LICENSES/           # In-skill copies of required licenses and notices
+├── NOTICE.md, LICENSE  # In-skill attribution and license (travel with installs)
+├── LICENSES/           # In-skill copies of required third-party licenses and notices
 ├── templates/          # PR description and ADO delivery report templates
 └── references/         # Guidance, loaded only when relevant
     ├── impeccable/     # Visual craft (third-party)
     ├── apple-design/   # Interaction and motion (third-party)
     ├── frontend/       # Frontend engineering guides (original)
     └── workflows/      # Git workflow and Azure DevOps delivery (original)
-LICENSE                 # MIT license for original UIUX Abhishek Design work
-NOTICE.md               # Ownership, attribution and redistribution notice
-SOURCES.md              # Provenance and SHA-256 checksums of bundled third-party files
-LICENSES/               # Third-party licenses and notices
-INSTALL.md              # Installation, update, removal and troubleshooting
-CLAUDE.md               # Maintainer policy for integrating new sources
-tools/                  # Builds the Claude upload ZIP (not installed)
-tests/                  # Repository validation and routing scenarios (not installed)
+INSTALL.md              # Installation, migration, updates, removal and troubleshooting
+CHANGELOG.md            # Versions and releases
+tools/                  # Upload ZIP builder and the optional updater (not installed)
+tests/                  # Validation, routing, Git, updater and migration tests (not installed)
+LICENSE, NOTICE.md, SOURCES.md, LICENSES/, CLAUDE.md
 ```
 
-This is a **guidance-only** skill. It doesn't bundle CLIs, binaries, hooks, scripts or credentials (including Azure DevOps credentials or connectors). Advanced Impeccable tooling, for example, needs a separate installation of the original project.
+This is a **guidance-only** skill. The installed skill doesn't include CLIs, binaries, hooks, scripts or credentials. The optional updater lives in `tools/` and is never installed with the skill.
 
 ## Maintenance
 
-- **Updating installed copies:** run `npx skills update uiuxabhishek-design -g -y`, or download the new release ZIP for Claude Chat. Publishing to GitHub doesn't update copies already installed on other machines or agent instances.
-- **Releasing:** bump `metadata.version` in `SKILL.md`, run `python3 tools/package_skill.py`, and attach `dist/uiuxabhishek-design-v<version>.zip` and its `.sha256` to a `v<version>` GitHub Release.
-- **Validating:** run `python3 tests/validate.py --cli`. It uses the Python standard library only, plus the Skills CLI for the discovery check. It covers single-skill discovery, a real install for every documented agent, the upload ZIP's contents, links, checksums, license mirrors, routing coverage, the scenarios in [`tests/routing_scenarios.json`](tests/routing_scenarios.json), context budget and a secret scan.
-- **Adding a source:** give the maintainer's Claude Code session a GitHub skill URL, a `SKILL.md`, a skill directory or an archive. [`CLAUDE.md`](CLAUDE.md) defines the integration policy: usefulness, security and license audits, deduplication, routing and documentation updates, validation, and publishing only when every check passes.
-- **Provenance:** every bundled third-party file is listed with its checksum in [`SOURCES.md`](SOURCES.md).
+- **Validate:** `python3 tests/validate.py --cli`. It uses the Python standard library, plus Node.js and the Skills CLI for the install, migration and updater checks. It covers:
+  - discovery and routing scenarios;
+  - the Git and updater sandboxes;
+  - links, checksums, license mirrors and the security scan;
+  - the upload ZIP;
+  - leftover references to the old skill ID.
+- **Release:**
+  1. Bump `metadata.version` in `SKILL.md` and add a `CHANGELOG.md` entry.
+  2. Run `python3 tools/package_skill.py`.
+  3. Attach the files from `dist/` to a `v<version>` GitHub Release.
+- **Add a source:** follow [CLAUDE.md](CLAUDE.md). Every bundled third-party file is checksummed in [SOURCES.md](SOURCES.md).
 
 ## Third-Party Licenses & Credits
 
-UIUX Abhishek Design's original work (routing, integration architecture, documentation, frontend engineering and Azure DevOps guides, and templates) is © Abhishek Rampal and licensed under the [MIT License](LICENSE). Bundled third-party material is **not** owned by Abhishek Rampal. It stays the work of its authors and is redistributed under its original licenses:
+UIUX Abhishek DevKit's original work is © Abhishek Rampal and licensed under the [MIT License](LICENSE). That covers the routing, architecture, documentation, frontend, Git and Azure DevOps guides, templates and tooling. Bundled third-party material is **not** owned by Abhishek Rampal. It stays the work of its authors and is redistributed under its original licenses:
 
 - **[Impeccable](https://github.com/pbakaus/impeccable)** by Paul Bakaus: [Apache License 2.0](LICENSES/IMPECCABLE_APACHE-2.0.txt), with its [upstream NOTICE](LICENSES/IMPECCABLE_NOTICE.md).
 - **[platform-design-skills](https://github.com/ehmo/platform-design-skills)** by ehmo: [MIT](LICENSES/PLATFORM_DESIGN_SKILLS_MIT.txt). Impeccable's iOS and Android references are derived from it.
 - **[Apple Design](https://github.com/emilkowalski/skills)** by Emil Kowalski: [MIT](LICENSES/APPLE_DESIGN_MIT.txt).
 
-UIUX Abhishek Design is independent and isn't affiliated with or endorsed by these authors, or by Apple Inc., Google or Microsoft. Apple, Azure DevOps and other trademarks belong to their owners. See [NOTICE.md](NOTICE.md) for full attribution and [SOURCES.md](SOURCES.md) for provenance. Keep `LICENSE`, `NOTICE.md` and `LICENSES/` when you redistribute.
+UIUX Abhishek DevKit is independent and isn't affiliated with or endorsed by these authors, or by Apple Inc., Google or Microsoft. Apple, Azure DevOps and other trademarks belong to their owners. See [NOTICE.md](NOTICE.md) for full attribution and [SOURCES.md](SOURCES.md) for provenance. Keep `LICENSE`, `NOTICE.md` and `LICENSES/` when you redistribute.

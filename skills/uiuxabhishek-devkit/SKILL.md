@@ -1,15 +1,15 @@
 ---
-name: uiuxabhishek-design
-description: UI/UX design, frontend engineering and Git workflow router. Use for visual design, layout, typography, color, UX copy, accessibility and design audits, responsive and native-platform UI, animation, gestures and spring motion; frontend pages, API integration, admin CRUD, reports, state, tests, code review, shared components and microfrontends; Azure DevOps (Azure Boards) work-item-to-draft-PR delivery; and Git repository workflows (commits, branches, PRs/MRs, conflicts, recovery, tags and releases) on any provider. Loads only the guidance a task needs. Not for backend-only, infrastructure or non-UI work except Git and ADO.
-license: MIT for UIUX Abhishek Design original work; bundled references keep their upstream licenses (see NOTICE.md)
+name: uiuxabhishek-devkit
+description: Design, frontend engineering and delivery router for UIUX Abhishek DevKit. Use for visual design, layout, typography, color, UX copy, accessibility and design audits, responsive and native-platform UI, animation, gestures and spring motion; frontend pages, API integration, admin CRUD, reports, state, tests, code review, shared components and microfrontends; Git repository workflows on any provider (commits, branches, PRs/MRs, conflicts, recovery, tags and releases); and Azure DevOps (Azure Boards) work-item-to-draft-PR delivery for any stack. Loads only the guidance a task needs. UI guidance is for UI work; Git and ADO apply to any repository. Not for other backend-only or infrastructure tasks.
+license: MIT for UIUX Abhishek DevKit original work; bundled references keep their upstream licenses (see NOTICE.md)
 metadata:
   author: Abhishek Rampal (uiuxAbhishek)
-  repository: https://github.com/abhishekinvission/uiuxabhishek-design
-  version: "1.1.0"
+  repository: https://github.com/abhishekinvission/uiuxabhishek-devkit
+  version: "2.0.0"
 ---
-# UIUX Abhishek Design
+# UIUX Abhishek DevKit
 
-**Visual Craft. Fluid Motion. Exceptional Experiences.** By Abhishek Rampal (uiuxAbhishek). This file is a router: classify the task, then load **only** the files listed for it. Paths are relative to this file.
+**Design. Build. Automate. Deliver.** By Abhishek Rampal (uiuxAbhishek). This file is a router: classify the task, then load **only** the files listed for it. Paths are relative to this file.
 
 ## 1. Classify
 
