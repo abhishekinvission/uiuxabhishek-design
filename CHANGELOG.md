@@ -4,7 +4,7 @@ All notable changes to UIUX Abhishek DevKit (formerly UIUX Abhishek Design) are 
 
 **Stable releases** are Git tags with a GitHub Release, a Claude upload ZIP and its SHA-256 checksum. These are what the optional updater installs. **Development versions** were set in `SKILL.md` on `main` but never tagged or released.
 
-## [2.0.1] — 2026-11-05 (maintenance, unreleased)
+## [2.0.1] — 2026-11-05 (stable release)
 
 Fixes only. The skill ID, capabilities, install commands and the Claude upload ZIP format are unchanged.
 
@@ -73,7 +73,7 @@ Tag `v1.0.0` (commit `dbb612c`), with the GitHub Release asset `uiuxabhishek-des
 - `f0b098f`: branding, ownership and licensing policy for integrating sources.
 - `8c7c9e5`, `93b5815`, `72d0bbf`: initial skill with Impeccable and Apple Design, the integration workflow and corrected install commands.
 
-[2.0.1]: https://github.com/abhishekinvission/uiuxabhishek-devkit/compare/v2.0.0...maint/v2.0.1
+[2.0.1]: https://github.com/abhishekinvission/uiuxabhishek-devkit/releases/tag/v2.0.1
 [2.0.0]: https://github.com/abhishekinvission/uiuxabhishek-devkit/releases/tag/v2.0.0
 [1.1.0]: https://github.com/abhishekinvission/uiuxabhishek-devkit/commit/82f5367
 [1.0.0]: https://github.com/abhishekinvission/uiuxabhishek-devkit/releases/tag/v1.0.0
