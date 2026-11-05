@@ -8,7 +8,7 @@ Created and maintained by **Abhishek Rampal ([uiuxAbhishek](https://github.com/a
 
 - **Repository:** [abhishekinvission/uiuxabhishek-devkit](https://github.com/abhishekinvission/uiuxabhishek-devkit)
 - **Skill ID:** `uiuxabhishek-devkit` (formerly `uiuxabhishek-design`; see [upgrading](#upgrading-from-uiuxabhishek-design))
-- **Current version:** 2.0.0 ([changelog](CHANGELOG.md))
+- **Current version:** 2.0.1 ([changelog](CHANGELOG.md))
 
 ## Install UIUX Abhishek DevKit
 
@@ -90,7 +90,7 @@ Describe the task in plain language. Naming the skill is optional, but you can s
 ## Updates and versions
 
 - **Stable releases** are tagged `vX.Y.Z` on GitHub with a Claude upload ZIP and its SHA-256 checksum. See [CHANGELOG.md](CHANGELOG.md).
-- **Update a local install:** `npx skills update uiuxabhishek-devkit -g -y`. An install made with the commands above follows `main`, which only receives validated changes. To stay on stable releases only, install a tag (`abhishekinvission/uiuxabhishek-devkit#v2.0.0`) or use the optional updater.
+- **Update a local install:** `npx skills update uiuxabhishek-devkit -g -y`. An install made with the commands above follows `main`, which only receives validated changes. To stay on stable releases only, install a tag (`abhishekinvission/uiuxabhishek-devkit#v2.0.1`) or use the optional updater.
 - **Update notifications (optional):** the [updater](INSTALL.md#optional-update-notifications-and-automatic-updates) checks GitHub once a day for a newer stable release and notifies you. It never changes anything unless you opt in with `enable-auto-update --yes`. It runs on macOS, Linux and Windows and touches only `uiuxabhishek-devkit`.
 - **Claude Chat uploads** are always updated by hand: delete the old skill and upload the new ZIP.
 - **Remove:** `npx skills remove uiuxabhishek-devkit -g -y`.

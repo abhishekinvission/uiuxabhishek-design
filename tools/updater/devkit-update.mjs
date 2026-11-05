@@ -35,6 +35,7 @@ const LABEL = "com.uiuxabhishek.devkit-update";
 const TASK = "UIUXAbhishekDevKitUpdate";
 const MARKER = "# uiuxabhishek-devkit-update";
 const LOCK_STALE_MS = 2 * 60 * 60 * 1000;
+const OVERDUE_MS = 48 * 60 * 60 * 1000; // daily schedule plus a day of grace
 
 const env = process.env;
 const HOME = env.DEVKIT_USER_HOME || os.homedir();
@@ -249,10 +250,33 @@ function which(bin) {
 const run = (cmd, args, input) => DRY_SCHEDULER ? { status: 0, stdout: "" } :
   spawnSync(cmd, args, { encoding: "utf8", input });
 const xml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const realpath = (p) => { try { return fs.realpathSync(p); } catch { return null; } };
+
+// The scheduler runs Node by absolute path. A version-specific path (Homebrew's
+// Cellar/node/<version>/bin/node) disappears on upgrade, so prefer the stable
+// link on PATH that resolves to the running binary, and keep it in config.json.
+function runnableNode(p) {
+  if (!p || !path.isAbsolute(p)) return false;
+  try { fs.accessSync(p, fs.constants.X_OK); } catch { return false; }
+  const r = spawnSync(p, ["--version"], { encoding: "utf8", timeout: 15000 });
+  return r.status === 0 && /^v\d+\./.test(r.stdout);
+}
+function chooseNode(prev) {
+  if (env.DEVKIT_NODE) {
+    if (!runnableNode(env.DEVKIT_NODE)) {
+      throw new UserError(`DEVKIT_NODE=${env.DEVKIT_NODE} is not a runnable Node.js executable; nothing changed`);
+    }
+    return { node: env.DEVKIT_NODE };
+  }
+  if (prev && runnableNode(prev)) return { node: prev };
+  const onPath = which(PLATFORM === "win32" ? "node.exe" : "node");
+  const node = onPath && realpath(onPath) === realpath(process.execPath) ? onPath : process.execPath;
+  return { node, note: prev ? `the saved Node path ${prev} no longer runs; now using ${node}` : null };
+}
+const scheduledNode = () => config()?.node || env.DEVKIT_NODE || process.execPath;
 
 function scheduleSpec() {
-  const node = env.DEVKIT_NODE || process.execPath;
-  const argv = [node, files.updater, "check", "--scheduled"];
+  const argv = [scheduledNode(), files.updater, "check", "--scheduled"];
   if (PLATFORM === "darwin") {
     const file = path.join(HOME, "Library", "LaunchAgents", `${LABEL}.plist`);
     const content = `<?xml version="1.0" encoding="UTF-8"?>
@@ -360,6 +384,28 @@ function notify(message) {
   } // Windows: the message is in update.log and `status`.
 }
 
+// A daily schedule with no run for ~2 days means the scheduler isn't starting the
+// check (computer off for days, schedule unloaded, Node path gone). A schedule
+// that hasn't had its first run yet is normal, not overdue.
+function scheduleHealth(cfg, state) {
+  if (cfg.mode === "off") return null;
+  const ago = (t) => Date.now() - Date.parse(t);
+  const hours = (t) => `${Math.floor(ago(t) / 3600000)} h ago`;
+  const help = "The computer may have been off, or the schedule or its Node path is broken. " +
+    "Run check now, and setup to repair the schedule (see INSTALL.md).";
+  if (state.lastScheduledAt) {
+    return ago(state.lastScheduledAt) > OVERDUE_MS
+      ? `WARNING: scheduled check overdue: the last one ran ${state.lastScheduledAt} (${hours(state.lastScheduledAt)}). ${help}`
+      : `Scheduled check: last ran ${state.lastScheduledAt}`;
+  }
+  let since = cfg.scheduledAt;
+  if (!since) try { since = fs.statSync(files.config).mtime.toISOString(); } catch {}
+  if (since && ago(since) > OVERDUE_MS) {
+    return `WARNING: scheduled check overdue: none has run since the schedule was set up ${since} (${hours(since)}). ${help}`;
+  }
+  return `Scheduled check: first run pending (daily at 10:15${since ? `; set up ${since}` : ""})`;
+}
+
 // ----------------------------------------------------------------- commands
 const config = () => readJson(files.config, null);
 const arg = (name) => process.argv.includes(name);
@@ -378,14 +424,18 @@ const commands = {
     const agents = argValue("--agents") ? argValue("--agents").split(",").map((a) => a.trim()) : detectAgents();
     const unknown = agents.filter((a) => !ALL_AGENTS.includes(a));
     if (unknown.length) throw new UserError(`unknown agents: ${unknown.join(", ")} (use ${ALL_AGENTS.join(", ")})`);
+    const prev = config() || {};
+    const { node, note } = chooseNode(prev.node); // validated before anything is written
     fs.mkdirSync(DIR, { recursive: true });
     if (path.resolve(SELF) !== path.resolve(files.updater)) fs.copyFileSync(SELF, files.updater);
-    const prev = config() || {};
-    const cfg = { mode: prev.mode === "auto" ? "auto" : "notify", agents, npx: env.DEVKIT_NPX || which(PLATFORM === "win32" ? "npx.cmd" : "npx"), schedule: !arg("--no-schedule") };
+    const schedule = !arg("--no-schedule");
+    const cfg = { mode: prev.mode === "auto" ? "auto" : "notify", agents, npx: env.DEVKIT_NPX || which(PLATFORM === "win32" ? "npx.cmd" : "npx"),
+      node, schedule, scheduledAt: schedule ? (prev.schedule && prev.scheduledAt) || new Date().toISOString() : null };
     writeJson(files.config, cfg);
     const kind = cfg.schedule ? installSchedule() : "none";
+    if (note) console.log(`Note: ${note}`);
     console.log(`Updater installed in ${DIR}\nMode: ${cfg.mode} (checks and notifies; never installs unless you run enable-auto-update)\n` +
-      `Agents: ${agents.join(", ") || "none detected yet"}\nSchedule: ${kind === "none" ? "off" : `daily (${kind})`}`);
+      `Agents: ${agents.join(", ") || "none detected yet"}\nNode: ${node}\nSchedule: ${kind === "none" ? "off" : `daily (${kind})`}`);
   },
 
   async check() {
@@ -393,11 +443,15 @@ const commands = {
     const scheduled = arg("--scheduled");
     if (scheduled && cfg.mode === "off") return;
     await withLock(async () => {
+      const prevState = readJson(files.state, {});
+      // A scheduled run counts as "ran" even if it then fails, so status can tell
+      // a failing check (lastError) from a scheduler that never started (overdue).
+      const ran = { lastScheduledAt: scheduled ? new Date().toISOString() : prevState.lastScheduledAt ?? null };
       let status;
       try {
-        status = await checkStatus();
+        status = { ...(await checkStatus()), ...ran };
       } catch (e) {
-        writeJson(files.state, { ...readJson(files.state, {}), lastError: e.message, checkedAt: new Date().toISOString() });
+        writeJson(files.state, { ...prevState, ...ran, lastError: e.message, checkedAt: new Date().toISOString() });
         throw e;
       }
       let result = null;
@@ -429,7 +483,7 @@ const commands = {
     if (!arg("--yes")) throw new UserError("update changes your installed skill; re-run with --yes to confirm");
     const cfg = config() || { agents: detectAgents() };
     await withLock(async () => {
-      const status = await checkStatus();
+      const status = { ...(await checkStatus()), lastScheduledAt: readJson(files.state, {}).lastScheduledAt ?? null };
       const result = await performUpdate(status, cfg);
       writeJson(files.state, { ...status, updateAvailable: !result.updated && status.updateAvailable, lastResult: result.message, lastError: null });
       console.log(result.message + (result.backup ? `\nBackup of the previous version: ${result.backup}` : ""));
@@ -440,10 +494,15 @@ const commands = {
   async "enable-auto-update"() {
     const cfg = requireSetup();
     if (!arg("--yes")) throw new UserError("automatic updates install new stable releases without asking; re-run with --yes to opt in");
+    const installedAlready = scheduleInstalled();
+    if (!installedAlready) {
+      cfg.node = chooseNode(cfg.node).node;
+      cfg.scheduledAt = new Date().toISOString();
+    }
     cfg.mode = "auto";
     cfg.schedule = true;
     writeJson(files.config, cfg);
-    if (!scheduleInstalled()) installSchedule();
+    if (!installedAlready) installSchedule();
     console.log("Automatic updates enabled: the daily check installs verified stable releases of uiuxabhishek-devkit only.");
   },
 
@@ -458,9 +517,15 @@ const commands = {
     const cfg = config();
     const state = readJson(files.state, {});
     const local = installed();
+    const scheduleOn = cfg ? scheduleInstalled() : false;
+    const nodeLine = !scheduleOn ? null
+      : !cfg.node ? "Node: not recorded (set up by an older updater); re-run setup to save a stable path"
+      : `Node: ${cfg.node}${runnableNode(cfg.node) ? "" : " (WARNING: missing or not runnable, so scheduled checks can't start; re-run setup)"}`;
     console.log([
       `Updater: ${cfg ? DIR : "not set up"}`,
-      `Mode: ${cfg?.mode ?? "-"}   Schedule: ${cfg ? (scheduleInstalled() ? `daily (${scheduleSpec().kind})` : "off") : "-"}`,
+      `Mode: ${cfg?.mode ?? "-"}   Schedule: ${cfg ? (scheduleOn ? `daily (${scheduleSpec().kind})` : "off") : "-"}`,
+      nodeLine,
+      scheduleOn ? scheduleHealth(cfg, state) : null,
       `Agents: ${cfg?.agents?.join(", ") || "-"}`,
       `Installed: ${local?.version ?? "not installed"}${local ? ` at ${local.dir}` : ""}`,
       `Last check: ${state.checkedAt ?? "never"}${state.latest ? `, latest ${state.latest}` : ""}${state.updateAvailable ? " (update available)" : ""}`,

@@ -47,6 +47,15 @@ class Sandbox:
         self.git(cwd, "commit", "-q", "-m", msg)
         return self.out(cwd, "rev-parse", "HEAD")
 
+    def snapshot(self, cwd):
+        """Every file under .git (refs, reflogs, index, config, FETCH_HEAD) with its bytes."""
+        root, out = os.path.join(self.base, cwd, ".git"), {}
+        for r, _, files in os.walk(root):
+            for f in files:
+                with open(os.path.join(r, f), "rb") as fh:
+                    out[os.path.relpath(os.path.join(r, f), root)] = fh.read()
+        return out
+
     def clone(self, name):
         self.git(".", "clone", "-q", "remote.git", name)
         for k, v in (("user.name", name), ("user.email", f"{name}@example.invalid"),
@@ -77,6 +86,26 @@ def run_checks():
               s.out("bob", "status", "--porcelain=v1", "-b").startswith("## main...origin/main"))
         merge_head = s.out("bob", "rev-parse", "--git-path", "MERGE_HEAD")
         check("detect: no operation in progress", not os.path.exists(os.path.join(base, "bob", merge_head)))
+
+        # §1-2 strict audit: the read-only command set changes nothing in .git, even after the remote moved
+        s.commit("alice", "remote.txt", "r\n", "Remote moves on")
+        s.git("alice", "push", "-q", "origin", "main")
+        before = s.snapshot("bob")
+        for args in (("rev-parse", "--show-toplevel"), ("--no-optional-locks", "status", "--porcelain=v1", "-b"),
+                     ("stash", "list"), ("worktree", "list"), ("branch", "-vv"), ("rev-parse", "--abbrev-ref", "@{u}"),
+                     ("remote", "-v"), ("symbolic-ref", "refs/remotes/origin/HEAD"), ("log", "--oneline", "-20"),
+                     ("rev-list", "--left-right", "--count", "@{u}...HEAD"), ("diff",), ("diff", "--cached"),
+                     ("ls-remote", "origin", "main")):
+            s.git("bob", *args)
+        check("audit: read-only command set leaves every file in .git unchanged", s.snapshot("bob") == before)
+        check("audit: without fetch, ls-remote shows the remote moved while tracking refs stay as of the last fetch",
+              s.out("bob", "rev-list", "--left-right", "--count", "@{u}...HEAD").split() == ["0", "0"]
+              and s.out("bob", "ls-remote", "origin", "main").split()[0] != s.out("bob", "rev-parse", "@{u}"))
+        s.git("bob", "fetch", "-q", "origin")
+        after_fetch = s.snapshot("bob")
+        check("audit: git fetch would write refs and FETCH_HEAD (why audit doesn't run it)",
+              after_fetch != before and "FETCH_HEAD" in after_fetch and "FETCH_HEAD" not in before)
+        s.git("bob", "pull", "-q", "--ff-only")  # back in sync for the steps below
 
         # §4 divergence and --ff-only pull keep local work
         s.commit("bob", "bob.txt", "b\n", "Bob change")

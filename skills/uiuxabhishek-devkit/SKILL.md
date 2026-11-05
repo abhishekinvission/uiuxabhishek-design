@@ -5,7 +5,7 @@ license: MIT for UIUX Abhishek DevKit original work; bundled references keep the
 metadata:
   author: Abhishek Rampal (uiuxAbhishek)
   repository: https://github.com/abhishekinvission/uiuxabhishek-devkit
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 # UIUX Abhishek DevKit
 
@@ -13,7 +13,7 @@ metadata:
 
 ## 1. Classify
 
-1. **Scope.** Frontend/UI work, plus `git` and `ado` (§2 Workflows), which apply to any repository and stack. For any other backend-only, database or infrastructure task, load nothing; for a mixed task, apply only the matching parts.
+1. **Scope.** Frontend/UI work, plus `git` and `ado` (§2 Workflows), which apply to any repository and stack. For any other backend-only, database or infrastructure task, load nothing; for a mixed task, apply only the matching parts. Design and Engineering rows other than `ado` cover UI and frontend code only: the backend part of a full-stack or `ado` task (a server endpoint, database or service) selects none of them.
 2. **Mode** (table below) caps what you may change.
 3. **Capabilities** (§2): one primary capability owns the deliverable. Add others only for a distinct responsibility (§3).
 4. **Project facts.** Inspect the real stack, design system, conventions, tests and repository instructions first, and follow them over reference examples.
@@ -28,7 +28,7 @@ metadata:
 | `implement` | build, add, create, fix, implement, change, make, refactor | in-scope files and the project's own checks; a local commit only when asked; no push, PR or ticket writes |
 | `deliver` | commit, git push, push the branch, push the tag, push it, open a pr, open a pull request, open a merge request, deliver, publish, tag, release | only the writes the request names (commit, task-branch push, **draft** PR/MR), with explicit user or repository-policy authorization |
 
-Limits win: "read-only", "dry run", "report only" or "don't change" means `audit`; "don't push", "no PR" or "locally" means at most `implement`. Otherwise `plan` > `deliver` > `implement` > `audit`. Never merge, deploy, force-push, delete or move branches/tags, rewrite published history, discard uncommitted work, or change credentials, permissions or ticket state unless explicitly asked for that operation and target; owning the repository is not authorization. [git-workflow.md](references/workflows/git-workflow.md) §2 lists the gates.
+Limits win: "read-only", "dry run", "report only" or "don't change" means `audit`; "don't push", "no PR" or "locally" means at most `implement`. In any mode, "don't fetch" or "do not fetch" rules out `git fetch` and `git pull`, and "offline" or "no network" (about the session, not an offline UI state) rules out all network calls; `audit` and `plan` never fetch or write refs unless the user authorizes that exact operation. Otherwise `plan` > `deliver` > `implement` > `audit`. Never merge, deploy, force-push, delete or move branches/tags, rewrite published history, discard uncommitted work, or change credentials, permissions or ticket state unless explicitly asked for that operation and target; owning the repository is not authorization. [git-workflow.md](references/workflows/git-workflow.md) §2 lists the gates.
 
 ## 2. Capability map
 
@@ -45,7 +45,7 @@ Each route is `signals → files`. A `+` item loads only when its capability is 
 | `typography` | typography, font, headings, type scale, line height → `typeset.md` |
 | `color` | color, palette, dark mode → `colorize.md` |
 | `ux-copy` | ux copy, microcopy, labels, error message, button text → `clarify.md` |
-| `harden` | edge cases, error states, loading states, i18n, long text, offline → `harden.md` |
+| `harden` | edge cases, error states, loading states, i18n, long text, offline state, offline support, network failure → `harden.md` |
 | `onboarding` | onboarding, first-run, empty state → `onboard.md` |
 | `responsive` | responsive, mobile breakpoints, screen sizes → `adapt.md` · +native app, ios, android, swiftui → `adapt.native.md` |
 | `ui-performance` | slow ui, jank, layout shift, lcp → `optimize.md` |

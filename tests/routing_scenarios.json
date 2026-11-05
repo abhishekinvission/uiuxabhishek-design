@@ -81,7 +81,7 @@
     {
       "id": "ado-dry-run",
       "prompt": "Here is Azure Boards work item 4521, tell me what it needs. Dry run only.",
-      "caps": ["ado"], "mode": "audit",
+      "caps": ["ado"], "mode": "audit", "net": "no-fetch",
       "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md", "templates/ado-delivery-report.md"],
       "forbid": ["references/frontend/testing.md", "references/frontend/review-and-release.md", "templates/pr-description.md"]
     },
@@ -151,14 +151,14 @@
     {
       "id": "git-status-audit",
       "prompt": "Show me the git status and diff of this repo. Read-only.",
-      "caps": ["git"], "mode": "audit",
+      "caps": ["git"], "mode": "audit", "net": "no-fetch",
       "must": ["references/workflows/git-workflow.md"],
       "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md", "references/workflows/azure-devops-delivery.md"]
     },
     {
       "id": "git-sync-branch",
       "prompt": "My feature branch is behind main; sync branch with the latest changes without losing my work.",
-      "caps": ["git"], "mode": "implement",
+      "caps": ["git"], "mode": "implement", "net": "fetch",
       "must": ["references/workflows/git-workflow.md"],
       "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md"]
     },
@@ -245,6 +245,69 @@
       "caps": ["api"], "mode": "implement",
       "must": ["references/frontend/api-integration.md"],
       "forbid": ["references/workflows/git-workflow.md", "references/workflows/git-recovery-and-release.md"]
+    },
+    {
+      "id": "ado-backend-only",
+      "prompt": "Implement Azure Boards work item 7310 in our .NET backend: add a refund endpoint to the payments API with unit tests. Don't push or open a PR.",
+      "caps": ["ado"], "mode": "implement", "net": "fetch",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md", "templates/ado-delivery-report.md", "references/frontend/testing.md", "references/frontend/review-and-release.md", "references/workflows/git-workflow.md"],
+      "forbid": ["references/frontend/api-integration.md", "references/impeccable/reference/craft-floor.md", "references/impeccable/SOURCE_SKILL.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "ado-backend-dry-run",
+      "prompt": "Azure Boards item 7311: what would the database migration for the billing microservice need? Dry run.",
+      "caps": ["ado"], "mode": "audit", "net": "no-fetch",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md"],
+      "forbid": ["references/frontend/testing.md", "references/frontend/data-reports.md", "references/workflows/git-workflow.md", "references/impeccable/reference/craft-floor.md"]
+    },
+    {
+      "id": "fullstack-frontend-part-only",
+      "prompt": "Full-stack task: add a Postgres migration for invoices on the backend, then build the invoices report page with filters and CSV export in the frontend.",
+      "caps": ["reports"], "mode": "implement",
+      "must": ["references/frontend/data-reports.md"],
+      "forbid": ["references/frontend/api-integration.md", "references/workflows/git-workflow.md", "references/impeccable/reference/craft-floor.md", "references/frontend/admin-crud.md"]
+    },
+    {
+      "id": "github-issue-not-ado",
+      "prompt": "Fix GitHub issue #88 in this repo and open a draft pull request.",
+      "caps": ["git"], "mode": "deliver", "net": "fetch",
+      "must": ["references/workflows/git-workflow.md", "templates/pr-description.md"],
+      "forbid": ["references/workflows/azure-devops-delivery.md", "references/workflows/ado-configuration.md", "templates/ado-delivery-report.md"]
+    },
+    {
+      "id": "git-offline-status",
+      "prompt": "We're offline: show the git status and how far this branch is behind main.",
+      "caps": ["git"], "mode": "audit", "net": "offline",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "git-sync-no-fetch",
+      "prompt": "Sync my feature branch with main, but do not fetch; use only what's already local.",
+      "caps": ["git"], "mode": "implement", "net": "no-fetch",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["references/workflows/git-recovery-and-release.md", "templates/pr-description.md"]
+    },
+    {
+      "id": "git-review-pr-readonly-net",
+      "prompt": "Review pull request 57 on GitHub, read-only; don't fetch its branch.",
+      "caps": ["git"], "mode": "audit", "net": "no-fetch",
+      "must": ["references/workflows/git-workflow.md"],
+      "forbid": ["templates/pr-description.md", "references/workflows/git-recovery-and-release.md"]
+    },
+    {
+      "id": "ado-offline-implement",
+      "prompt": "Implement Azure DevOps work item 4522 locally while offline, no network.",
+      "caps": ["ado"], "mode": "implement", "net": "offline",
+      "must": ["references/workflows/azure-devops-delivery.md", "references/workflows/git-workflow.md"],
+      "forbid": ["templates/pr-description.md"]
+    },
+    {
+      "id": "harden-offline-ui",
+      "prompt": "Handle the offline state and network failure messages in the checkout screen.",
+      "caps": ["harden"], "mode": "implement", "net": "fetch",
+      "must": ["references/impeccable/reference/harden.md", "references/impeccable/reference/craft-floor.md"],
+      "forbid": ["references/workflows/git-workflow.md"]
     }
   ]
 }

@@ -82,6 +82,7 @@ The pack describes itself as framework-independent guides written for this proje
 - Removed duplicated gate and review steps from `azure-devops-delivery.md` in favor of links to `testing.md` and `review-and-release.md`; `review-and-release.md` now points to `templates/pr-description.md`.
 - Converted cross-references to relative Markdown links.
 - 2026-11-04: moved the generic Git preflight, staging, commit and push steps of `azure-devops-delivery.md` into the shared `git-workflow.md`, which ADO now links to; the Azure-specific ticket, PR and comment steps are unchanged.
+- 2026-11-05 (2.0.1): `git-workflow.md` and `azure-devops-delivery.md` no longer fetch or write refs in `audit`, `plan` or ADO dry runs, and they honor "don't fetch" and "offline" in every mode.
 - Not imported: the pack's `PACKAGE_MANIFEST.json`, `README.md` and `integration/` instructions (installer metadata, merged into `SKILL.md` routing instead).
 
 Checksums (paths relative to `skills/uiuxabhishek-devkit/`):
@@ -96,8 +97,8 @@ Checksums (paths relative to `skills/uiuxabhishek-devkit/`):
 - `references/frontend/state-management.md  110f8342d6a899a0c9a1e07c351200fcd6ef08b262bfd7ced98430418eaa2cb6`
 - `references/frontend/testing.md  cc71b889040f77e4a10c14240c02d42df610db893a62dc112bcac5a6b4ce5337`
 - `references/workflows/ado-configuration.md  f18ab5459e39f3d0a72ae66f92748f8ef3530c2c870db0beee23f19c01c67629`
-- `references/workflows/azure-devops-delivery.md  2b668c524d2506f21851885947ad5b57c8e881baa0edc943a23c61fdeb1b8ea4`
+- `references/workflows/azure-devops-delivery.md  7ede12a81686e3c429cbbeeceaf16fafc5a3543e4994c9cfb40e1675f9ac1ab5`
 - `references/workflows/git-recovery-and-release.md  360437c2addb9c9a9759cea5fc007e741fe2cf618ca52eca5495d935c6b1ddda`
-- `references/workflows/git-workflow.md  edf71c17638179abdd12b66067a51e6bda7f8a9be8b8de202447f9fe482db8e7`
+- `references/workflows/git-workflow.md  a143bf5584b9e478f9daff1388dcb81ee16104c4924a742303b9815175f22194`
 - `templates/ado-delivery-report.md  6673430bb2dfeed82758d1b459f82a699b4b4fad636c506a863e00a342e7783f`
 - `templates/pr-description.md  ed01966273e1e72cdc6c76c8d93a63060fdb3fb8b1e4a0ae0bfd1ab0fa9d3b94`
