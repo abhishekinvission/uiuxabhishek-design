@@ -14,7 +14,7 @@ Commands below are portable Git CLI examples. Substitute real names, prefer the 
 | Remotes and provider | `git remote -v`; infer the provider from the host (github.com, gitlab.*, dev.azure.com / visualstudio.com, bitbucket.org, other). Self-hosted hosts may be any provider: confirm, don't guess |
 | Default and base branch | Repository policy first (CONTRIBUTING, PR templates, CI config, user instructions); else `git symbolic-ref refs/remotes/origin/HEAD`. Never hardcode `main`/`master`/`develop` |
 | Conventions | Branch names and commit style from `git log --oneline -20` and docs; required sign-off, signing, issue keys, hooks (`core.hooksPath`), LFS (`.gitattributes`), submodules (`.gitmodules`) |
-| Divergence | After `git fetch` (updates remote-tracking refs only): `git rev-list --left-right --count @{u}...HEAD` (behind, ahead) |
+| Divergence | `git rev-list --left-right --count @{u}...HEAD` (behind, ahead). Fetch first only where §2 allows it; otherwise report the counts as of the last fetch, and compare `git ls-remote <remote> <branch>` with `git rev-parse @{u}` to see whether the remote moved without writing any ref |
 | Tools, auth, network | Check availability before use: `gh auth status`, `glab auth status`, `az account show` + `az devops` extension, or an approved connector. Absent, unauthenticated or offline → local Git only, plus manual steps for provider actions |
 | Permissions and protection | Provider API/CLI when available (protected branches, required reviews/checks, push rules). Unknown → treat the target as protected |
 
@@ -24,10 +24,12 @@ Report what you could not determine instead of assuming it.
 
 | Mode | Git operations allowed |
 | --- | --- |
-| `audit` | Read-only inspection: status, diff, log, blame, branch/remote listing, provider reads (PR/MR, checks). `git fetch` only when network use is acceptable; it changes remote-tracking refs, never branches or files |
+| `audit` | Read-only inspection: `git --no-optional-locks status`, diff, log, blame, branch/remote listing, `git ls-remote`, provider reads (PR/MR, checks). No `git fetch`, `pull`, `remote update` or anything else that writes refs, the index or config, unless the user authorizes that exact operation |
 | `plan` | Same as audit, plus a written sequence of commands with risks and recovery |
 | `implement` | Local, reversible writes inside scope: create/switch task branches, stage explicit paths, commit **when asked to commit**, fast-forward pulls, local merges into the task branch |
 | `deliver` | What the request names, no more: push the task branch, open a **draft** PR/MR, request reviewers, post an authorized comment |
+
+In any mode, "don't fetch" or "do not fetch" rules out `git fetch` and `git pull`, and "offline" or "no network" rules out every network call (`ls-remote`, push, provider tools). Work from local refs and report what that leaves unverified.
 
 Authorization covers exactly the named operation and target: "commit" doesn't authorize a push, "push" doesn't authorize a PR, and opening a PR doesn't authorize merging it. The following always need **explicit, specific, current** authorization naming the target, even in `deliver`, and even when the user owns the repository or the tool has permission (permission is not authorization):
 
@@ -51,7 +53,7 @@ Never use `--no-verify`, skip signing, bypass protection or disable CI unless th
 ## 4. Everyday operations
 
 - **Clone:** into a new, empty directory; `git clone <url> <dir>`. Respect LFS and submodules (`git submodule update --init` only when needed). Cloning doesn't run hooks; don't run the repository's install or setup scripts unless asked.
-- **Fetch / pull:** `git fetch --prune <remote>`, inspect divergence, then `git pull --ff-only`. If it isn't a fast-forward, report ahead/behind counts and follow repository policy (merge or rebase), with approval if it rewrites published commits.
+- **Fetch / pull** (not in `audit`, or when told not to fetch or to stay offline; see §2): `git fetch --prune <remote>`, inspect divergence, then `git pull --ff-only`. If it isn't a fast-forward, report ahead/behind counts and follow repository policy (merge or rebase), with approval if it rewrites published commits.
 - **Branch:** create from the fetched base (`git switch -c <task-branch> <remote>/<base>`) using the repository's naming convention and a name that doesn't already exist locally or remotely.
 - **Stage:** explicit paths (`git add -- <paths>`), never a blind `git add -A`/`.`. Review `git diff --cached --stat` and `git diff --cached` before committing.
 - **Commit:** one logical change, in the repository's message convention (for example Conventional Commits, issue keys or sign-off), with an informative subject and why in the body.
@@ -81,7 +83,7 @@ Apply as relevant and report each result; stop on failure:
 | Other / no tool | Give the compare URL or manual steps; don't fabricate a link |
 
 - **Read back** the created PR/MR (state, draft flag, source and target, title) and report the real URL.
-- **Review a PR/MR:** read its description, diff and checks with the provider tool (`gh pr view/diff/checks`, `glab mr view/diff`, `az repos pr show`) or by fetching its ref. Report findings by severity with file and line. Post comments, approve or request changes only when asked.
+- **Review a PR/MR:** read its description, diff and checks with the provider tool (`gh pr view/diff/checks`, `glab mr view/diff`, `az repos pr show`). Fetch its ref only outside `audit`, or when the user authorizes it. Report findings by severity with file and line. Post comments, approve or request changes only when asked.
 - **Merge** only under the approval gate: confirm required reviews and checks pass, use the repository's merge method, and don't delete the source branch unless asked.
 
 ## 7. Report

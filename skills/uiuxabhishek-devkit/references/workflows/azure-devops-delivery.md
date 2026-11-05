@@ -36,7 +36,7 @@ Read [ado-configuration.md](ado-configuration.md) first. Before implementing or 
 - Proposed unconfirmed contracts must be labeled `UNCONFIRMED`; keep typed fixtures test-only, never claim integration works or import mock data into production.
 
 ### 4. Safe Git preflight
-- Fetch latest remote state (read-only); inspect current branch, `git status`, remote tracking, upstream branch policy and existing ticket branches, as in [git-workflow.md](git-workflow.md) §1.
+- Get the latest remote state: fetch in `implement`/`deliver`; in a dry run or `audit`, don't fetch, use `git ls-remote` and say local tracking refs may be stale (see [git-workflow.md](git-workflow.md) §2). Inspect current branch, `git status`, remote tracking, upstream branch policy and existing ticket branches, as in [git-workflow.md](git-workflow.md) §1.
 - Preserve developer changes (git-workflow.md §3); use a separate worktree when the tree is dirty and that is safe and authorized.
 - Select base/target from **this repository's policy**, never a hardcoded branch name. Create a task branch only with permission and a collision-safe name that includes the ticket ID when conventions require it.
 - The approval gates in git-workflow.md §2 apply: no force push, branch deletion, disabled hooks, bypassed protection or direct commit to protected branches.

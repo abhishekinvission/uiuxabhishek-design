@@ -39,7 +39,7 @@ npx skills add abhishekinvission/uiuxabhishek-devkit --skill uiuxabhishek-devkit
 
 To install into the current project only, so it's shared through the repository, leave out `-g`. Run `npx skills add --help` to see every option your CLI version supports.
 
-**Stable releases only.** The commands above follow the repository's `main` branch. To pin a release, add the tag: `npx skills add abhishekinvission/uiuxabhishek-devkit#v2.0.0 --skill uiuxabhishek-devkit -g -a claude-code -y`. A pinned install stays on that tag when you run `update`, until you install a newer tag or use the [updater](#optional-update-notifications-and-automatic-updates).
+**Stable releases only.** The commands above follow the repository's `main` branch. To pin a release, add the tag: `npx skills add abhishekinvission/uiuxabhishek-devkit#v2.0.1 --skill uiuxabhishek-devkit -g -a claude-code -y`. A pinned install stays on that tag when you run `update`, until you install a newer tag or use the [updater](#optional-update-notifications-and-automatic-updates).
 
 **Where it lands.** With Skills CLI 1.7.6, a global install puts one copy in `~/.agents/skills/uiuxabhishek-devkit`, which Codex, Gemini CLI, GitHub Copilot and Antigravity read. Claude Code gets `~/.claude/skills/uiuxabhishek-devkit`, linked to that copy when you install for several agents. The CLI prints the exact paths when it finishes.
 
@@ -159,6 +159,14 @@ Invoke-WebRequest https://github.com/abhishekinvission/uiuxabhishek-devkit/relea
 node devkit-update.mjs setup
 ```
 
+**Which Node it schedules.** The scheduler starts the check with an absolute Node path, saved as `node` in `~/.uiuxabhishek-devkit/config.json`. `setup` picks the stable `node` on your `PATH` (for Homebrew, `/opt/homebrew/bin/node`), not a versioned binary such as `Cellar/node/<version>/bin/node`, which disappears when Node is upgraded. Later `setup` runs reuse the saved path while it still runs. If it stops working, `setup` picks a working one and tells you. To choose one yourself, set `DEVKIT_NODE` once; it's validated, saved and reused:
+
+```bash
+DEVKIT_NODE=/opt/homebrew/bin/node node ~/.uiuxabhishek-devkit/devkit-update.mjs setup
+```
+
+An invalid `DEVKIT_NODE` is rejected and nothing changes. Updating from the 2.0.0 updater: download the new `devkit-update.mjs` as above and run `node devkit-update.mjs setup` again. It keeps your mode and agents and saves a stable Node path.
+
 After `setup`, run the installed copy, for example `node ~/.uiuxabhishek-devkit/devkit-update.mjs status` (Windows: `node $HOME\.uiuxabhishek-devkit\devkit-update.mjs status`):
 
 | Command | What it does |
@@ -167,7 +175,7 @@ After `setup`, run the installed copy, for example `node ~/.uiuxabhishek-devkit/
 | `check` | Checks now and prints installed vs. latest stable. Changes nothing |
 | `update --yes` | Installs the latest verified stable release now |
 | `enable-auto-update --yes` | Lets the daily check install verified stable releases |
-| `status` | Shows mode, schedule, agents, versions, last result, errors and the log path |
+| `status` | Shows mode, schedule, the scheduled Node path, agents, versions, last result, errors and the log path. It warns when the saved Node path no longer runs, or when no scheduled check has run for about 48 hours. Right after `setup` it shows the first check as pending |
 | `disable` | Removes the schedule and stops automatic updates. Manual `check`/`update` still work |
 | `uninstall` | Removes the schedule and `~/.uiuxabhishek-devkit`. The skill stays installed |
 
@@ -188,6 +196,8 @@ After `setup`, run the installed copy, for example `node ~/.uiuxabhishek-devkit/
 | The skill shows in Chat but can't edit your code | That's expected. Chat has no access to your local repository. Use a local coding agent for implementation, Git and Azure DevOps delivery. |
 | The updater says "another updater run is in progress" | Wait for it to finish. If nothing is running, the lock clears after two hours, or delete `~/.uiuxabhishek-devkit/update.lock`. |
 | The updater reports a verification failure | It didn't update. Check `status` and keep your current version, or reinstall a known tag with the command it prints. |
+| `status` says the scheduled check is overdue | No scheduled check has run for about 48 hours. The computer may have been off or asleep for days, or the schedule isn't loaded. Run `check` to check now, then `setup` to recreate the schedule. A failing check shows **Last error** instead. |
+| `status` shows the Node path as missing or not runnable | Node was removed or moved, so the scheduler can't start the check. Run `setup` again to pick a working Node, or set `DEVKIT_NODE` (see above). |
 | Azure DevOps steps stop at a dry run | That's intended without write authorization. You also need an approved, signed-in Azure DevOps connector or `az devops` CLI, and you have to say **implement** or **deliver** and grant the permissions. See [GUIDE.md](skills/uiuxabhishek-devkit/GUIDE.md). |
 
 Licensing and credits travel with every install in `NOTICE.md` and `LICENSES/`. See the [README](README.md#third-party-licenses--credits).

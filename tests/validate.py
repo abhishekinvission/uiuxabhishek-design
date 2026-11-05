@@ -286,7 +286,13 @@ def check_coverage(caps, never):
 
 LIMIT_AUDIT = "read-only, dry run, report only, don't change"
 LIMIT_IMPLEMENT = "don't push, no pr, locally"
+LIMIT_NO_FETCH = "don't fetch, do not fetch"
+LIMIT_OFFLINE = "offline, no network"
 ADO_OWNS_GIT = "when `ado` is selected, don't select `git` separately"
+BACKEND_RULE = "the backend part of a full-stack or `ado` task"
+STRICT_AUDIT = "`audit` and `plan` never fetch or write refs"
+# Prompts that name backend work and no UI select no Design or Engineering row (SKILL.md §1 Scope)
+BACKEND_WORDS = {"backend", "database", "sql", "migration", "microservice", "postgre", "net"}
 
 
 def detect_mode(prompt, modes):
@@ -305,9 +311,11 @@ def route(prompt, modes, caps, craft_floor, groups):
     w = words(prompt)
     mode = detect_mode(prompt, modes)
     selected, files = [], []
+    frontend = (groups["Design"] | groups["Engineering"]) - {"ado"}
+    backend_only = bool(w & BACKEND_WORDS) and not (w & UI_WORDS)
     for cap, segs in caps.items():
         hit = [s for s in segs if not s["cond"] and matches(s["signals"], w)]
-        if hit:
+        if hit and not (backend_only and cap in frontend):
             selected.append(cap)
             files += [f for s in hit for f in s["files"]]
     if "ado" in selected and "git" in selected:
@@ -331,7 +339,13 @@ def route(prompt, modes, caps, craft_floor, groups):
         files = ["GUIDE.md"] if outcome == "guide" else []
     else:
         outcome = "route"
-    return set(selected), mode, outcome, list(dict.fromkeys(files))
+    if matches(LIMIT_OFFLINE, w) and not set(selected) & groups["Design"]:
+        net = "offline"  # the session is offline: no network call of any kind (an offline UI state is `harden`)
+    elif matches(LIMIT_NO_FETCH, w) or mode in ("answer", "audit", "plan"):
+        net = "no-fetch"  # network reads allowed, no git fetch/pull and no ref writes
+    else:
+        net = "fetch"
+    return set(selected), mode, outcome, list(dict.fromkeys(files)), net
 
 
 def tokens(paths):
@@ -361,8 +375,10 @@ def check_scenarios(modes, caps, never, craft_floor, groups, text):
     print(f"\n{'scenario':30} {'mode':10} {'capabilities':34} {'tokens':>7} {'before':>7}  result")
     total_new = total_old = 0
     for sc in data["scenarios"]:
-        selected, mode, outcome, files = route(sc["prompt"], modes, caps, craft_floor, groups)
+        selected, mode, outcome, files, net = route(sc["prompt"], modes, caps, craft_floor, groups)
         errs = []
+        if "net" in sc and net != sc["net"]:
+            errs.append(f"network {net} != {sc['net']}")
         if selected != set(sc["caps"]):
             errs.append(f"caps {sorted(selected)} != {sorted(sc['caps'])}")
         if mode != sc["mode"]:
@@ -525,9 +541,14 @@ def main():
     text, modes, caps, never, craft_floor, groups = parse_router()
     check(set(modes) == {"answer", "audit", "plan", "implement", "deliver"}, f"modes {sorted(modes)}")
     limits = text.lower().replace("\u2019", "'")
-    for phrase in (LIMIT_AUDIT + "," + LIMIT_IMPLEMENT).split(","):
+    for phrase in ",".join((LIMIT_AUDIT, LIMIT_IMPLEMENT, LIMIT_NO_FETCH, LIMIT_OFFLINE)).split(","):
         check(phrase.strip() in limits, f"limit phrase {phrase.strip()!r} not documented in SKILL.md")
     check(ADO_OWNS_GIT in limits, "SKILL.md must say ado owns git")
+    check(BACKEND_RULE in limits, "SKILL.md must keep frontend rows out of the backend part of a task")
+    check(STRICT_AUDIT in limits, "SKILL.md must say audit and plan never fetch")
+    git_guide = read(os.path.join(SKILL, "references", "workflows", "git-workflow.md")).lower().replace("’", "'")
+    for phrase in ("no `git fetch`, `pull`", "don't fetch", "offline", "--no-optional-locks", "git ls-remote"):
+        check(phrase in git_guide, f"git-workflow.md lacks the strict read-only rule {phrase!r}")
     check_coverage(caps, never)
     check_budget(text)
     check_security()

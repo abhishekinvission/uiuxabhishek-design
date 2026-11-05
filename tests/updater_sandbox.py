@@ -8,6 +8,7 @@ writes into a throwaway HOME, and scheduler files written in test mode
 (DEVKIT_NO_EXEC_SCHEDULER=1, so launchctl, systemctl, crontab and schtasks are
 never run). Nothing touches the network, real installations or schedulers.
 """
+import datetime
 import http.server
 import json
 import os
@@ -136,6 +137,132 @@ class Home:
     def run(self, *args, updater=UPDATER, **extra):
         return subprocess.run(["node", updater, *args], env={**self.env, **extra},
                               capture_output=True, text=True, timeout=60)
+
+
+def iso(hours_ago):
+    t = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours_ago)
+    return t.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
+def node_path_checks(check, new, base, plist_rel):
+    """Stable Node path: chosen, saved, reused, validated. Homebrew-style links in the sandbox."""
+    real = os.path.realpath(shutil.which("node"))
+    brew = os.path.join(base, "brew")
+
+    def brew_install(version):  # bin/node -> ../Cellar/node/<version>/bin/node -> the real binary
+        cellar = os.path.join(brew, "Cellar", "node", version, "bin")
+        os.makedirs(cellar, exist_ok=True)
+        if not os.path.lexists(os.path.join(cellar, "node")):
+            os.symlink(real, os.path.join(cellar, "node"))
+        stable = os.path.join(brew, "bin", "node")
+        os.makedirs(os.path.dirname(stable), exist_ok=True)
+        if os.path.lexists(stable):
+            os.remove(stable)
+        os.symlink(os.path.join("..", "Cellar", "node", version, "bin", "node"), stable)
+        return stable
+
+    stable = brew_install("26.0.0")
+    on_path = {"PATH": os.path.dirname(stable) + os.pathsep + os.environ.get("PATH", "")}
+    h = new()
+    plist, cfg_path = os.path.join(h.path, plist_rel), os.path.join(h.dir, "config.json")
+    cfg = lambda: json.load(open(cfg_path))
+    text = lambda: open(plist).read()
+    r = h.run("setup", **on_path)
+    check("setup saves the stable Node link, not the versioned binary",
+          r.returncode == 0 and cfg().get("node") == stable and f"<string>{stable}</string>" in text() and real not in text())
+
+    brew_install("26.1.0")  # Homebrew upgrade: the link moves on, the old version is removed
+    shutil.rmtree(os.path.join(brew, "Cellar", "node", "26.0.0"))
+    st = h.run("status").stdout
+    check("after a Homebrew Node upgrade the saved path still runs", f"Node: {stable}" in st and "WARNING" not in st)
+    r = h.run("setup")  # no DEVKIT_NODE, and the brew directory is no longer on PATH
+    check("re-setup reuses the saved Node path", r.returncode == 0 and cfg().get("node") == stable and stable in text())
+    h.run("disable")
+    r = h.run("setup")
+    check("disable then setup restores the schedule with the saved Node path",
+          r.returncode == 0 and stable in text() and cfg()["mode"] == "notify")
+    h.run("disable")
+    h.run("enable-auto-update", "--yes")
+    check("re-enabling via enable-auto-update keeps the saved Node path", stable in text() and cfg()["mode"] == "auto")
+    h.run("disable")
+    h.run("setup")
+    check("setup after disable returns to notify-only", cfg()["mode"] == "notify")
+
+    os.remove(stable)  # Node uninstalled or the link removed
+    st = h.run("status").stdout
+    check("status warns when the saved Node path is missing", "missing or not runnable" in st)
+    r = h.run("setup")
+    check("re-setup replaces a missing Node path with a working one and says so",
+          r.returncode == 0 and "no longer runs" in r.stdout and os.path.exists(cfg().get("node") or "") and (cfg().get("node") or "\0") in text())
+    before = (open(cfg_path).read(), text())
+    for label, bad in (("a missing", os.path.join(base, "nope", "node")), ("a non-Node", shutil.which("sh"))):
+        r = h.run("setup", DEVKIT_NODE=bad)
+        check(f"{label} DEVKIT_NODE is rejected without changing config or schedule",
+              r.returncode == 1 and "not a runnable Node.js" in r.stderr and (open(cfg_path).read(), text()) == before)
+    stable = brew_install("26.2.0")
+    r = h.run("setup", DEVKIT_NODE=stable)
+    check("an explicit DEVKIT_NODE is validated, saved and used", r.returncode == 0 and cfg().get("node") == stable and stable in text())
+
+
+def overdue_checks(check, new, mock, plist_rel):
+    """status separates a pending first check, a recent check and a missed one."""
+    h = new()
+    h.run("setup")
+    cfg_path, state_path = os.path.join(h.dir, "config.json"), os.path.join(h.dir, "state.json")
+    copied = os.path.join(h.dir, "devkit-update.mjs")
+
+    def edit(p, **kw):
+        data = json.load(open(p)) if os.path.exists(p) else {}
+        data.update(kw)
+        json.dump(data, open(p, "w"))
+
+    status = lambda: h.run("status").stdout
+    st = status()
+    check("a fresh setup reports the first scheduled check as pending, not overdue",
+          "first run pending" in st and "overdue" not in st)
+    edit(cfg_path, scheduledAt=iso(50))
+    check("no scheduled run 50 h after setup is reported overdue",
+          "WARNING: scheduled check overdue: none has run since" in status())
+    h.run("check")  # a manual check doesn't prove the scheduler works
+    check("a manual check doesn't hide a missed scheduled check", "overdue" in status())
+    h.run("check", "--scheduled", updater=copied)
+    st = status()
+    check("a scheduled run clears the warning", "Scheduled check: last ran" in st and "overdue" not in st)
+    edit(state_path, lastScheduledAt=iso(47))
+    check("a scheduled run 47 h ago is not overdue", "overdue" not in status())
+    edit(state_path, lastScheduledAt=iso(49))
+    check("a scheduled run 49 h ago is overdue", "WARNING: scheduled check overdue: the last one ran" in status())
+    mock.reset("v2.1.0", down=True)
+    h.run("check", "--scheduled", updater=copied)
+    st = status()
+    check("a failing scheduled check counts as a run and shows its error",
+          "overdue" not in st and "Last error" in st and "HTTP 503" in st)
+    mock.reset("v2.1.0")
+    stamp = iso(1)
+    edit(state_path, lastScheduledAt=stamp)
+    r = h.run("update", "--yes")
+    check("a manual update keeps the scheduled-run record",
+          r.returncode == 0 and json.load(open(state_path)).get("lastScheduledAt") == stamp)
+    h.run("disable")
+    check("no overdue warning while the schedule is off", "Scheduled check" not in status() and "overdue" not in status())
+
+    # configuration written by the 2.0.0 updater: no node or scheduledAt, no lastScheduledAt
+    h = new()
+    h.run("setup")
+    cfg_path, state_path = os.path.join(h.dir, "config.json"), os.path.join(h.dir, "state.json")
+    legacy = json.load(open(cfg_path))
+    legacy.pop("node", None), legacy.pop("scheduledAt", None)
+    json.dump(legacy, open(cfg_path, "w"))
+    st = h.run("status").stdout
+    check("2.0.0 config: a recent setup is pending and asks to save a Node path",
+          "first run pending" in st and "Node: not recorded" in st)
+    old = time.time() - 72 * 3600
+    os.utime(cfg_path, (old, old))
+    check("2.0.0 config: falls back to the config date for overdue detection", "overdue" in h.run("status").stdout)
+    r = h.run("setup")
+    cfg = json.load(open(cfg_path))
+    check("re-setup upgrades a 2.0.0 config in place", r.returncode == 0 and cfg.get("node") and cfg.get("scheduledAt")
+          and cfg["mode"] == "notify" and cfg["agents"] == legacy["agents"] and cfg["npx"] == legacy["npx"])
 
 
 def run_checks():
@@ -279,6 +406,8 @@ def run_checks():
               not os.path.exists(os.path.join(h.path, sched["darwin"])))
         r = h.run("update", "--yes", updater=os.path.join(h.dir, "devkit-update.mjs"))
         check("configured agents limit the update", h.calls()[-1].count("-a") == 1 and "codex" in h.calls()[-1])
+        node_path_checks(check, new, base, sched["darwin"])
+        overdue_checks(check, new, mock, sched["darwin"])
     finally:
         srv.shutdown()
         shutil.rmtree(base, ignore_errors=True)

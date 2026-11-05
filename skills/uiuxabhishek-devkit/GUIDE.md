@@ -23,7 +23,8 @@ Describe the task in plain language. The skill picks the right guidance and load
 
 | Say | It will |
 | --- | --- |
-| "audit", "review", "read-only", "dry run" | report findings only, with no edits |
+| "audit", "review", "read-only", "dry run" | report findings only, with no edits. Git checks don't fetch or change any branch, tag or ref |
+| "don't fetch", "offline" | in any mode, work from local Git state with no `git fetch` or pull; "offline" also means no network calls |
 | "plan", "spec" | write a plan, with no edits |
 | "build", "fix", "add" | edit files in scope and run your project's own checks. It doesn't commit, push or open PRs |
 | "commit", "push the branch", "open a draft PR", with your authorization | do only what you named, following your repository's rules: a commit doesn't imply a push, and a PR is opened as a **draft** |
